@@ -1,7 +1,7 @@
 # Open-Meteo MCP TypeScript
 
 [![Deno Deploy](https://github.com/schlp/open-meteo-mcp-ts/workflows/Deploy%20to%20Deno%20Deploy/badge.svg)](https://github.com/schlp/open-meteo-mcp-ts/actions)
-[![Tests](https://img.shields.io/badge/tests-144%20passing-success)](https://github.com/schlp/open-meteo-mcp-ts)
+[![Tests](https://img.shields.io/badge/tests-168%20passing-success)](https://github.com/schlp/open-meteo-mcp-ts)
 [![Deno](https://img.shields.io/badge/deno-v1.40+-blue)](https://deno.land)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
@@ -173,11 +173,11 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
 
 ## Testing
 
-All 144 tests passing:
+All 168 tests passing:
 
 ```bash
 $ deno test --allow-net --allow-read --allow-env
-ok | 144 passed | 0 failed (654ms)
+ok | 168 passed | 0 failed (857ms)
 ```
 
 ### Test Coverage
@@ -189,6 +189,7 @@ ok | 144 passed | 0 failed (654ms)
 - **12 tests**: Integration improvements
 - **26 tests**: Model validation (Zod schemas)
 - **22 tests**: Server integration (tools, resources, prompts)
+- **24 tests**: Server tool call handlers (all 11 MCP tools)
 
 ## API Usage
 
@@ -260,7 +261,7 @@ This TypeScript implementation maintains full feature parity with the [Python ve
 | MCP Tools | 11 | 11 ✅ |
 | MCP Resources | 4 | 4 ✅ |
 | MCP Prompts | 3 | 3 ✅ |
-| Tests | 137 | 144 ✅ |
+| Tests | 137 | 168 ✅ |
 | Gzip Compression | ✅ | ✅ |
 | JSON Serialization | ✅ | ✅ |
 
