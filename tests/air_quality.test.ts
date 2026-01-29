@@ -8,13 +8,13 @@ import { OpenMeteoClient } from "../src/client.ts";
 
 // Mock fetch helper
 function createMockFetch(responseData: unknown, status = 200): typeof fetch {
-  return async () =>
-    ({
+  return () =>
+    Promise.resolve({
       ok: status >= 200 && status < 300,
       status,
-      json: async () => responseData,
+      json: () => Promise.resolve(responseData),
       headers: new Headers(),
-    }) as Response;
+    }) as Promise<Response>;
 }
 
 Deno.test("AirQuality: high pollution levels", async () => {

@@ -14,24 +14,24 @@ function createMockFetch(
   responseData: unknown,
   status = 200,
 ): typeof fetch {
-  return async () => {
-    return {
+  return () => {
+    return Promise.resolve({
       ok: status >= 200 && status < 300,
       status,
       statusText: status === 200 ? "OK" : "Error",
-      json: async () => responseData,
-    } as Response;
+      json: () => Promise.resolve(responseData),
+    }) as Promise<Response>;
   };
 }
 
 function createMockFetchError(status: number): typeof fetch {
-  return async () => {
-    return {
+  return () => {
+    return Promise.resolve({
       ok: false,
       status,
       statusText: status === 500 ? "Internal Server Error" : "Service Unavailable",
-      json: async () => ({}),
-    } as Response;
+      json: () => Promise.resolve({}),
+    }) as Promise<Response>;
   };
 }
 

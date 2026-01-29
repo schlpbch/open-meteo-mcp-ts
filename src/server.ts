@@ -743,7 +743,7 @@ export function listPrompts(): ListPromptsResult {
   };
 }
 
-export async function getPrompt(request: GetPromptRequest) {
+export function getPrompt(request: GetPromptRequest) {
   const { name, arguments: args } = request.params;
 
   // args is optional for prompts, so we provide empty object as default

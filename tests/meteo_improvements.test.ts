@@ -9,13 +9,13 @@ import { OpenMeteoClient } from "../src/client.ts";
 
 // Mock fetch helper
 function createMockFetch(responseData: unknown, status = 200): typeof fetch {
-  return async () =>
-    ({
+  return () =>
+    Promise.resolve({
       ok: status >= 200 && status < 300,
       status,
-      json: async () => responseData,
+      json: () => Promise.resolve(responseData),
       headers: new Headers(),
-    }) as Response;
+    }) as Promise<Response>;
 }
 
 // ============================================================================
@@ -162,15 +162,15 @@ Deno.test("Timezone Consistency: air quality accepts timezone parameter", async 
   let fetchCalled = false;
   let fetchUrl = "";
 
-  globalThis.fetch = async (input: string | URL | Request) => {
+  globalThis.fetch = (input: string | URL | Request) => {
     fetchCalled = true;
     fetchUrl = typeof input === "string" ? input : input.toString();
-    return {
+    return Promise.resolve({
       ok: true,
       status: 200,
-      json: async () => mockData,
+      json: () => Promise.resolve(mockData),
       headers: new Headers(),
-    } as Response;
+    }) as Promise<Response>;
   };
 
   const client = new OpenMeteoClient();
@@ -219,16 +219,16 @@ Deno.test("Timezone Consistency: same timezone across endpoints", async () => {
   };
 
   // Mock fetch to return different responses based on URL
-  globalThis.fetch = async (input: string | URL | Request) => {
+  globalThis.fetch = (input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input.toString();
     const responseData = url.includes("air-quality") ? airQualityResponse : weatherResponse;
 
-    return {
+    return Promise.resolve({
       ok: true,
       status: 200,
-      json: async () => responseData,
+      json: () => Promise.resolve(responseData),
       headers: new Headers(),
-    } as Response;
+    }) as Promise<Response>;
   };
 
   const client = new OpenMeteoClient();
@@ -481,16 +481,16 @@ Deno.test("Integration: end-to-end weather workflow", async () => {
   };
 
   // Mock fetch to return different responses based on URL
-  globalThis.fetch = async (input: string | URL | Request) => {
+  globalThis.fetch = (input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input.toString();
     const responseData = url.includes("geocoding") ? locationResponse : weatherResponse;
 
-    return {
+    return Promise.resolve({
       ok: true,
       status: 200,
-      json: async () => responseData,
+      json: () => Promise.resolve(responseData),
       headers: new Headers(),
-    } as Response;
+    }) as Promise<Response>;
   };
 
   const client = new OpenMeteoClient();
