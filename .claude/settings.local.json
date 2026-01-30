@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(deno task:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
+    ]
+  }
+}
