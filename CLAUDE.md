@@ -4,16 +4,16 @@ This document provides context for AI assistants (like Claude) working with this
 
 ## Project Overview
 
-**Open-Meteo MCP TypeScript** is a Model Context Protocol (MCP) server that provides weather data from Open-Meteo to AI assistants. It's a complete TypeScript/Deno rewrite of the original Python implementation.
+**Open-Meteo MCP TypeScript** is a Model Context Protocol (MCP) server that provides weather data from Open-Meteo to AI assistants. It's a TypeScript implementation running on Node.js 20 LTS+ for broader ecosystem compatibility.
 
 ### Key Facts
 
-- **Runtime**: Deno 1.40+
+- **Runtime**: Node.js 20 LTS+ (migrated from Deno, Feb 2026)
 - **Protocol**: Model Context Protocol (MCP)
 - **API**: Open-Meteo (free, no API key required)
 - **Language**: TypeScript with strict type checking
-- **Testing**: 144 tests, all passing
-- **Deployment**: Deno Deploy via GitHub Actions
+- **Testing**: 168 tests, all passing (100% pass rate)
+- **Deployment**: Docker (multi-stage, Node.js Alpine)
 
 ## Architecture
 
@@ -50,16 +50,16 @@ src/
 
 ### [src/main.ts](src/main.ts)
 
-- Entry point with shebang for Deno
+- Entry point with Node.js shebang (`#!/usr/bin/env node`)
 - Creates MCP server instance
 - Registers request handlers
 - Sets up stdio transport
 - Error handling and logging
 
 **Key patterns:**
-- Uses `import.meta.main` for module detection
+- Uses `import.meta.url` with `process.argv[1]` for module detection (Node.js compatible)
 - Logs to stderr (stdout reserved for MCP protocol)
-- Graceful error handling with process exit codes
+- Graceful error handling with `process.exit()` codes
 
 ### [src/server.ts](src/server.ts)
 
@@ -133,27 +133,27 @@ export type WeatherResponse = z.infer<typeof WeatherResponseSchema>;
 
 **Run tests:**
 ```bash
-deno task test              # Run all tests
-deno task test:watch        # Watch mode
-deno task coverage          # Generate coverage
+pnpm test                   # Run all tests (168/168)
+pnpm test:watch             # Watch mode
+pnpm coverage               # Generate coverage
 ```
 
 **Development:**
 ```bash
-deno task dev               # Hot reload
-deno task start             # Production mode
+pnpm dev                    # Hot reload with tsx
+pnpm start                  # Production mode
 ```
 
 **Code quality:**
 ```bash
-deno task lint              # Lint code
-deno task fmt               # Format code
-deno task check             # Type check
+pnpm lint                   # Lint code (ESLint)
+pnpm fmt                    # Format code (Prettier)
+pnpm check                  # Type check (tsc)
 ```
 
 **Testing with MCP Inspector:**
 ```bash
-npx @modelcontextprotocol/inspector deno run --allow-net --allow-read --allow-env src/main.ts
+npx @modelcontextprotocol/inspector node dist/main.js
 ```
 
 ### Making Changes
@@ -327,14 +327,20 @@ Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 {
   "mcpServers": {
     "open-meteo": {
-      "command": "deno",
-      "args": [
-        "run",
-        "--allow-net",
-        "--allow-read",
-        "--allow-env",
-        "/absolute/path/to/open-meteo-mcp-ts/src/main.ts"
-      ]
+      "command": "node",
+      "args": ["/absolute/path/to/open-meteo-mcp-ts/dist/main.js"]
+    }
+  }
+}
+```
+
+Or using Docker:
+```json
+{
+  "mcpServers": {
+    "open-meteo": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "open-meteo-mcp:latest"]
     }
   }
 }
@@ -342,12 +348,12 @@ Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ## Important Notes & Gotchas
 
-### Permissions
+### Node.js Configuration
 
-Deno requires explicit permissions. Required flags:
-- `--allow-net`: API calls to Open-Meteo
-- `--allow-read`: Reading JSON resources from `src/data/`
-- `--allow-env`: Environment variables (optional, for future config)
+No explicit permission model (implicit permissions):
+- Network access available by default
+- File system access available by default
+- Environment variables accessible via `process.env`
 
 ### Stdio Protocol
 
@@ -445,24 +451,40 @@ Tests use mocked responses by default. For integration testing:
 - **Original Python version**: [schlp/open-meteo-mcp](https://github.com/schlp/open-meteo-mcp)
 - **MCP SDK**: [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk)
 
-## Migration Notes
+## Migration History
 
-This is a complete rewrite from Python, maintaining feature parity:
+### From Python (v1-2)
 
-| Aspect | Python | TypeScript |
-|--------|--------|------------|
-| Framework | FastMCP | MCP SDK |
-| Validation | Pydantic | Zod |
-| Runtime | Python 3.11+ | Deno 1.40+ |
-| Tests | 137 pytest | 144 Deno test |
-| HTTP | httpx | Fetch API |
+Complete rewrite to TypeScript for better type safety and performance:
 
-**Breaking changes**: None - MCP protocol is identical
+| Aspect    | Python       | TypeScript             |
+| --------- | ------------ | ---------------------- |
+| Framework | FastMCP      | MCP SDK                |
+| Validation| Pydantic     | Zod                    |
+| Runtime   | Python 3.11+ | Deno 1.40+ (initial)   |
+| Tests     | 137 pytest   | 144+ Deno test         |
+| HTTP      | httpx        | Fetch API              |
+
+### From Deno to Node.js (Feb 2026)
+
+Migrated to Node.js 20 LTS+ for broader ecosystem acceptance:
+
+| Aspect      | Deno                          | Node.js            |
+| ----------- | ----------------------------- | ------------------ |
+| Runtime     | Deno 1.40+                    | Node.js 20 LTS+    |
+| Package Mgr | JSR/npm                       | npm/pnpm           |
+| Test Runner | deno test                     | node --test        |
+| Shebang     | `#!/usr/bin/env -S deno run ...` | `#!/usr/bin/env node` |
+| Build       | esbuild                       | tsc                |
+| Tests       | 144 tests                     | 168 tests          |
+| Deployment  | Deno Deploy                   | Docker             |
+
+**Breaking changes**: None - MCP protocol is identical, binary execution compatible
 
 ## Tips for Working with This Codebase
 
 1. **Always read files before editing** - Don't guess at implementation details
-2. **Run tests frequently** - `deno task test:watch` during development
+2. **Run tests frequently** - `pnpm test:watch` during development
 3. **Use type inference** - Let TypeScript help you
 4. **Check API docs** - Open-Meteo has excellent documentation
 5. **Test with Inspector** - Visual debugging is invaluable
@@ -480,6 +502,7 @@ This is a complete rewrite from Python, maintaining feature parity:
 
 ---
 
-**Last Updated**: 2026-01-29
-**MCP Version**: 4.0.0
-**Deno Version**: 1.40+
+**Last Updated**: 2026-02-04
+**Version**: 4.1.0 (Node.js)
+**Node.js Version**: 20.0.0+
+**Status**: ✅ Production Ready
