@@ -444,5 +444,5 @@ test("normalizeAirQualityTimezone: preserves data", () => {
   };
   const result = normalizeAirQualityTimezone(airQualityData);
   assert.equal(result.latitude, 47.3);
-  assert.equal((result.hourly as Record<string, unknown>).pm2_5, [10, 15]);
+  assert.deepEqual((result.hourly as Record<string, unknown>).pm2_5, [10, 15]);
 });

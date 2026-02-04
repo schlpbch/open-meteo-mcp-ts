@@ -431,38 +431,38 @@ test("MarineConditions: valid marine conditions", () => {
 test("HourlyWeather: handles default empty arrays", () => {
   const result = HourlyWeatherSchema.parse({});
 
-  assert.equal(result.time, []);
-  assert.equal(result.temperature_2m, []);
-  assert.equal(result.precipitation, []);
-  assert.equal(result.weather_code, []);
-  assert.equal(result.wind_speed_10m, []);
+  assert.deepEqual(result.time, []);
+  assert.deepEqual(result.temperature_2m, []);
+  assert.deepEqual(result.precipitation, []);
+  assert.deepEqual(result.weather_code, []);
+  assert.deepEqual(result.wind_speed_10m, []);
 });
 
 test("DailyWeather: handles default empty arrays", () => {
   const result = DailyWeatherSchema.parse({});
 
-  assert.equal(result.time, []);
-  assert.equal(result.temperature_2m_max, []);
-  assert.equal(result.temperature_2m_min, []);
-  assert.equal(result.precipitation_sum, []);
-  assert.equal(result.weather_code, []);
+  assert.deepEqual(result.time, []);
+  assert.deepEqual(result.temperature_2m_max, []);
+  assert.deepEqual(result.temperature_2m_min, []);
+  assert.deepEqual(result.precipitation_sum, []);
+  assert.deepEqual(result.weather_code, []);
 });
 
 test("HourlySnow: handles default empty arrays", () => {
   const result = HourlySnowSchema.parse({});
 
-  assert.equal(result.time, []);
-  assert.equal(result.temperature_2m, []);
-  assert.equal(result.snowfall, []);
-  assert.equal(result.snow_depth, []);
-  assert.equal(result.weather_code, []);
+  assert.deepEqual(result.time, []);
+  assert.deepEqual(result.temperature_2m, []);
+  assert.deepEqual(result.snowfall, []);
+  assert.deepEqual(result.snow_depth, []);
+  assert.deepEqual(result.weather_code, []);
 });
 
 test("DailySnow: handles default empty arrays", () => {
   const result = DailySnowSchema.parse({});
 
-  assert.equal(result.time, []);
-  assert.equal(result.temperature_2m_max, []);
-  assert.equal(result.temperature_2m_min, []);
-  assert.equal(result.snowfall_sum, []);
+  assert.deepEqual(result.time, []);
+  assert.deepEqual(result.temperature_2m_max, []);
+  assert.deepEqual(result.temperature_2m_min, []);
+  assert.deepEqual(result.snowfall_sum, []);
 });
