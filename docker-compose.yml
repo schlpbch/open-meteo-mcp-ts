@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  open-meteo-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: open-meteo-mcp
+    environment:
+      NODE_ENV: production
+    ports:
+      # MCP runs on stdio, so expose any future REST API ports here
+      # - "8888:8888"
+    restart: unless-stopped
+    networks:
+      - default
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - "com.openmeteo.description=Open-Meteo MCP Weather Data Server"
+      - "com.openmeteo.version=4.1.0"
+
+networks:
+  default:
+    name: open-meteo-network
+    driver: bridge
