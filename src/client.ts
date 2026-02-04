@@ -1,25 +1,22 @@
 /**
  * Async HTTP client for Open-Meteo Weather API.
- * TypeScript/Deno implementation using native fetch.
+ * TypeScript/Node.js implementation using native fetch.
  */
 
-import { getLogger } from "@std/log";
 import type {
   AirQualityForecast,
   GeocodingResponse,
   MarineConditions,
   SnowConditions,
   WeatherForecast,
-} from "./models.ts";
+} from "./models.js";
 import {
   AirQualityForecastSchema,
   GeocodingResponseSchema,
   MarineConditionsSchema,
   SnowConditionsSchema,
   WeatherForecastSchema,
-} from "./models.ts";
-
-const logger = getLogger();
+} from "./models.js";
 
 /**
  * Client for the Open-Meteo Weather API.
@@ -60,12 +57,6 @@ export class OpenMeteoClient {
     includeHourly = true,
     timezone = "auto",
   ): Promise<WeatherForecast> {
-    logger.debug("Fetching weather", {
-      latitude,
-      longitude,
-      forecastDays,
-    });
-
     // Clamp forecast_days to 1-16
     const clampedDays = Math.min(Math.max(forecastDays, 1), 16);
 
@@ -100,18 +91,11 @@ export class OpenMeteoClient {
 
       const data = await response.json();
 
-      logger.debug("Weather fetched successfully", {
-        latitude,
-        longitude,
-      });
-
       return WeatherForecastSchema.parse(data);
     } catch (error) {
       if (error instanceof Error && error.message.includes("HTTP error")) {
-        logger.error("Weather API HTTP error", { error: error.message });
         throw error;
       }
-      logger.error("Weather API unexpected error", { error });
       throw new Error(`Failed to parse weather data: ${error}`);
     }
   }
@@ -134,12 +118,6 @@ export class OpenMeteoClient {
     includeHourly = true,
     timezone = "Europe/Zurich",
   ): Promise<SnowConditions> {
-    logger.debug("Fetching snow conditions", {
-      latitude,
-      longitude,
-      forecastDays,
-    });
-
     // Clamp forecast_days to 1-16
     const clampedDays = Math.min(Math.max(forecastDays, 1), 16);
 
@@ -173,18 +151,11 @@ export class OpenMeteoClient {
 
       const data = await response.json();
 
-      logger.debug("Snow conditions fetched successfully", {
-        latitude,
-        longitude,
-      });
-
       return SnowConditionsSchema.parse(data);
     } catch (error) {
       if (error instanceof Error && error.message.includes("HTTP error")) {
-        logger.error("Snow API HTTP error", { error: error.message });
         throw error;
       }
-      logger.error("Snow API unexpected error", { error });
       throw new Error(`Failed to parse snow data: ${error}`);
     }
   }
@@ -207,12 +178,6 @@ export class OpenMeteoClient {
     includePollen = true,
     timezone = "auto",
   ): Promise<AirQualityForecast> {
-    logger.debug("Fetching air quality", {
-      latitude,
-      longitude,
-      forecastDays,
-    });
-
     // Build hourly parameters
     const hourlyParams = [
       "european_aqi",
@@ -266,18 +231,11 @@ export class OpenMeteoClient {
 
       const data = await response.json();
 
-      logger.debug("Air quality fetched successfully", {
-        latitude,
-        longitude,
-      });
-
       return AirQualityForecastSchema.parse(data);
     } catch (error) {
       if (error instanceof Error && error.message.includes("HTTP error")) {
-        logger.error("Air quality API HTTP error", { error: error.message });
         throw error;
       }
-      logger.error("Air quality API unexpected error", { error });
       throw new Error(`Failed to parse air quality data: ${error}`);
     }
   }
@@ -298,13 +256,6 @@ export class OpenMeteoClient {
     language = "en",
     country?: string,
   ): Promise<GeocodingResponse> {
-    logger.debug("Searching location", {
-      name,
-      count,
-      language,
-      country,
-    });
-
     // Clamp count to 1-100
     const clampedCount = Math.min(Math.max(count, 1), 100);
 
@@ -330,7 +281,10 @@ export class OpenMeteoClient {
         );
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as {
+        results?: Array<{ country_code?: string }>;
+        generationtime_ms?: number;
+      };
       let results = data.results || [];
 
       // Apply client-side country filtering if country is specified
@@ -338,24 +292,14 @@ export class OpenMeteoClient {
       if (country && results.length > 0) {
         const countryUpper = country.toUpperCase();
         const filteredResults = results.filter(
-          (r: { country_code?: string }) => r.country_code?.toUpperCase() === countryUpper,
+          (r) => r?.country_code?.toUpperCase?.() === countryUpper,
         );
 
         // If we have matches after filtering, use them; otherwise return all
         if (filteredResults.length > 0) {
           results = filteredResults;
-          logger.debug("Location search country filtered", {
-            name,
-            country,
-            filteredCount: results.length,
-          });
         }
       }
-
-      logger.debug("Location search completed", {
-        name,
-        resultsCount: results.length,
-      });
 
       // Return the response with filtered results
       return GeocodingResponseSchema.parse({
@@ -364,10 +308,8 @@ export class OpenMeteoClient {
       });
     } catch (error) {
       if (error instanceof Error && error.message.includes("HTTP error")) {
-        logger.error("Geocoding API HTTP error", { error: error.message });
         throw error;
       }
-      logger.error("Geocoding API unexpected error", { error });
       throw new Error(`Failed to parse geocoding data: ${error}`);
     }
   }
@@ -392,13 +334,6 @@ export class OpenMeteoClient {
     hourly = false,
     timezone = "auto",
   ): Promise<WeatherForecast> {
-    logger.debug("Fetching historical weather", {
-      latitude,
-      longitude,
-      startDate,
-      endDate,
-    });
-
     // Build query parameters
     const params = new URLSearchParams({
       latitude: latitude.toString(),
@@ -430,20 +365,11 @@ export class OpenMeteoClient {
 
       const data = await response.json();
 
-      logger.debug("Historical weather fetched successfully", {
-        latitude,
-        longitude,
-      });
-
       return WeatherForecastSchema.parse(data);
     } catch (error) {
       if (error instanceof Error && error.message.includes("HTTP error")) {
-        logger.error("Historical weather API HTTP error", {
-          error: error.message,
-        });
         throw error;
       }
-      logger.error("Historical weather API unexpected error", { error });
       throw new Error(`Failed to parse historical weather data: ${error}`);
     }
   }
@@ -466,12 +392,6 @@ export class OpenMeteoClient {
     includeHourly = true,
     timezone = "auto",
   ): Promise<MarineConditions> {
-    logger.debug("Fetching marine conditions", {
-      latitude,
-      longitude,
-      forecastDays,
-    });
-
     // Clamp forecast_days to 1-16
     const clampedDays = Math.min(Math.max(forecastDays, 1), 16);
 
@@ -504,18 +424,11 @@ export class OpenMeteoClient {
 
       const data = await response.json();
 
-      logger.debug("Marine conditions fetched successfully", {
-        latitude,
-        longitude,
-      });
-
       return MarineConditionsSchema.parse(data);
     } catch (error) {
       if (error instanceof Error && error.message.includes("HTTP error")) {
-        logger.error("Marine API HTTP error", { error: error.message });
         throw error;
       }
-      logger.error("Marine API unexpected error", { error });
       throw new Error(`Failed to parse marine data: ${error}`);
     }
   }

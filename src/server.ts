@@ -3,6 +3,9 @@
  * Migrated from Python FastMCP to TypeScript @modelcontextprotocol/sdk
  */
 
+import { readFileSync } from "fs";
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import type {
   CallToolRequest,
   GetPromptRequest,
@@ -12,9 +15,8 @@ import type {
   ReadResourceRequest,
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
-import { OpenMeteoClient } from "./client.ts";
-import { calculateAstronomyData, calculateComfortIndex, generateWeatherAlerts } from "./helpers.ts";
-import { join } from "https://deno.land/std@0.224.0/path/mod.ts";
+import { OpenMeteoClient } from "./client.js";
+import { calculateAstronomyData, calculateComfortIndex, generateWeatherAlerts } from "./helpers.js";
 
 // Initialize API client
 const client = new OpenMeteoClient();
@@ -23,20 +25,17 @@ const client = new OpenMeteoClient();
  * Get the data directory path
  */
 function getDataPath(filename: string): string {
-  const moduleDir = new URL(".", import.meta.url).pathname;
-  // On Windows, remove leading slash from pathname
-  const cleanPath = Deno.build.os === "windows" && moduleDir.startsWith("/")
-    ? moduleDir.slice(1)
-    : moduleDir;
-  return join(cleanPath, "data", filename);
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
+  return join(__dirname, "data", filename);
 }
 
 /**
  * Load resource file as string
  */
-async function loadResourceFile(filename: string): Promise<string> {
+function loadResourceFile(filename: string): string {
   const path = getDataPath(filename);
-  return await Deno.readTextFile(path);
+  return readFileSync(path, "utf-8");
 }
 
 // ============================================================================
@@ -661,7 +660,7 @@ export async function readResource(request: ReadResourceRequest) {
     throw new Error(`Unknown resource: ${uri}`);
   }
 
-  const content = await loadResourceFile(filename);
+  const content = loadResourceFile(filename);
 
   return {
     contents: [
