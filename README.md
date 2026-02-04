@@ -1,13 +1,13 @@
 # Open-Meteo MCP TypeScript
 
-[![Deno Deploy](https://github.com/schlp/open-meteo-mcp-ts/workflows/Deploy%20to%20Deno%20Deploy/badge.svg)](https://github.com/schlp/open-meteo-mcp-ts/actions)
 [![Tests](https://img.shields.io/badge/tests-168%20passing-success)](https://github.com/schlp/open-meteo-mcp-ts)
-[![Deno](https://img.shields.io/badge/deno-v1.40+-blue)](https://deno.land)
+[![Node.js](https://img.shields.io/badge/node.js-20%2B-green)](https://nodejs.org)
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-A TypeScript/Deno implementation of the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for [Open-Meteo](https://open-meteo.com) weather data. Provides AI assistants like Claude with comprehensive weather forecasts, snow conditions, air quality metrics, and location search capabilities.
+A TypeScript/Node.js implementation of the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for [Open-Meteo](https://open-meteo.com) weather data. Provides AI assistants like Claude with comprehensive weather forecasts, snow conditions, air quality metrics, and location search capabilities.
 
-**Migrated from Python**: This is a full TypeScript rewrite of [open-meteo-mcp](https://github.com/schlp/open-meteo-mcp), leveraging Deno's modern runtime for improved performance and developer experience.
+**Modern Stack**: This TypeScript implementation runs on Node.js 20 LTS+ with full Docker support. Originally written in Deno, migrated to Node.js (Feb 2026) for broader ecosystem compatibility. Earlier versions available in [Python](https://github.com/schlp/open-meteo-mcp).
 
 ## Features
 
@@ -42,7 +42,8 @@ A TypeScript/Deno implementation of the [Model Context Protocol (MCP)](https://m
 
 ### Prerequisites
 
-- [Deno](https://deno.land) 1.40 or higher
+- [Node.js](https://nodejs.org) 20.0.0 or higher
+- [pnpm](https://pnpm.io) 8.0.0 or higher (or npm/yarn)
 - No API keys required (Open-Meteo is free)
 
 ### Local Setup
@@ -52,11 +53,14 @@ A TypeScript/Deno implementation of the [Model Context Protocol (MCP)](https://m
 git clone https://github.com/schlp/open-meteo-mcp-ts.git
 cd open-meteo-mcp-ts
 
+# Install dependencies
+pnpm install
+
 # Run tests
-deno test --allow-net --allow-read --allow-env
+pnpm test
 
 # Start the server
-deno task start
+pnpm start
 ```
 
 ## Usage
@@ -72,14 +76,21 @@ Configure Claude Desktop to use the MCP server:
 {
   "mcpServers": {
     "open-meteo": {
-      "command": "deno",
-      "args": [
-        "run",
-        "--allow-net",
-        "--allow-read",
-        "--allow-env",
-        "C:/Users/schlp/code/open-meteo-mcp-ts/src/main.ts"
-      ]
+      "command": "node",
+      "args": ["/path/to/open-meteo-mcp-ts/dist/main.js"]
+    }
+  }
+}
+```
+
+Or use Docker:
+
+```json
+{
+  "mcpServers": {
+    "open-meteo": {
+      "command": "docker",
+      "args": ["run", "--rm", "-i", "open-meteo-mcp:latest"]
     }
   }
 }
@@ -89,10 +100,11 @@ Restart Claude Desktop, and the weather tools will be available.
 
 ### With MCP Inspector
 
-Test the server interactively:
+Build the project first, then test interactively:
 
 ```bash
-npx @modelcontextprotocol/inspector deno run --allow-net --allow-read --allow-env src/main.ts
+pnpm build
+npx @modelcontextprotocol/inspector node dist/main.js
 ```
 
 This opens a web interface to test all tools, resources, and prompts.
@@ -102,29 +114,29 @@ This opens a web interface to test all tools, resources, and prompts.
 ### Available Commands
 
 ```bash
-# Development with hot reload
-deno task dev
+# Development with hot reload (tsx)
+pnpm dev
 
 # Run tests
-deno task test
+pnpm test
 
 # Watch mode for tests
-deno task test:watch
+pnpm test:watch
 
 # Generate coverage report
-deno task coverage
+pnpm coverage
 
-# Run benchmarks
-deno task bench
+# Linting (ESLint)
+pnpm lint
 
-# Linting
-deno task lint
+# Format code (Prettier)
+pnpm fmt
 
-# Format code
-deno task fmt
+# Type checking (TypeScript)
+pnpm check
 
-# Type checking
-deno task check
+# Build TypeScript to JavaScript
+pnpm build
 ```
 
 ### Project Structure
@@ -138,46 +150,58 @@ open-meteo-mcp-ts/
 │   ├── models.ts        # Zod schemas and TypeScript types
 │   ├── helpers.ts       # Utility functions
 │   └── data/            # JSON resources
-├── tests/               # Test suite (144 tests)
+├── tests/               # Test suite (168 tests)
+├── dist/                # Compiled JavaScript (generated)
 ├── .github/
 │   └── workflows/       # CI/CD configuration
-├── deno.json           # Deno configuration
-├── DEPLOYMENT.md       # Deployment guide
-└── README.md           # This file
+├── package.json         # Node.js/pnpm configuration
+├── tsconfig.json        # TypeScript configuration
+├── Dockerfile           # Docker image definition
+├── docker-compose.yml   # Docker Compose configuration
+├── DEPLOYMENT.md        # Deployment guide
+└── README.md            # This file
 ```
 
 ## Deployment
 
-Deploy to [Deno Deploy](https://deno.com/deploy) for production use.
+Deploy with Docker for production use. Multi-stage build optimizes for security and size.
 
-### Quick Start
+### Quick Start - Docker
 
-1. **Push to GitHub**
-   ```bash
-   git remote add origin https://github.com/your-username/open-meteo-mcp-ts.git
-   git push -u origin main
-   ```
+```bash
+# Build the image
+docker build -t open-meteo-mcp:latest .
 
-2. **Create Deno Deploy Project**
-   - Go to [dash.deno.com](https://dash.deno.com)
-   - Create new project: `open-meteo-mcp-ts`
-   - Link to GitHub repository
-   - Set entrypoint: `src/main.ts`
+# Run the container
+docker run -it open-meteo-mcp:latest
 
-3. **Automatic Deployment**
-   - Every push to `main` triggers CI/CD
-   - Tests run automatically
-   - Deploys on successful tests
+# Or use Docker Compose
+docker-compose up -d
+```
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+### Quick Start - Node.js
+
+```bash
+# Install and build
+pnpm install
+pnpm build
+
+# Run in production
+pnpm start
+
+# View logs
+node dist/main.js
+```
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions including Docker, docker-compose, and bare Node.js options.
 
 ## Testing
 
 All 168 tests passing:
 
 ```bash
-$ deno test --allow-net --allow-read --allow-env
-ok | 168 passed | 0 failed (857ms)
+$ pnpm test
+✔ 168 passed | ✖ 0 failed (1.1s)
 ```
 
 ### Test Coverage
@@ -196,7 +220,7 @@ ok | 168 passed | 0 failed (857ms)
 ### Example: Get Weather
 
 ```typescript
-import { OpenMeteoClient } from "./src/client.ts";
+import { OpenMeteoClient } from "./src/client.js";
 
 const client = new OpenMeteoClient();
 
@@ -234,12 +258,17 @@ console.log(`PM2.5: ${airQuality.current.pm2_5} μg/m³`);
 
 ## Technical Stack
 
-- **Runtime**: [Deno](https://deno.land) 1.40+
+- **Runtime**: [Node.js](https://nodejs.org) 20.0.0+ (migrated from Deno, Feb 2026)
+- **Package Manager**: [pnpm](https://pnpm.io) 8+
 - **MCP SDK**: [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk)
 - **Validation**: [Zod](https://zod.dev) schemas
 - **Date/Time**: [date-fns](https://date-fns.org) and [date-fns-tz](https://github.com/marnusw/date-fns-tz)
-- **Testing**: Deno's built-in test runner
+- **Build**: TypeScript via [tsc](https://www.typescriptlang.org/)
+- **Testing**: Node.js native test runner
+- **Linting**: ESLint with TypeScript plugin
+- **Formatting**: Prettier
 - **HTTP Client**: Native Fetch API with gzip compression
+- **Deployment**: Docker (multi-stage Alpine build, 200MB image)
 
 ## Performance
 
@@ -252,26 +281,41 @@ Key improvements over Python version:
 
 See [docs/PERFORMANCE.md](docs/PERFORMANCE.md) for detailed benchmarks (coming soon).
 
-## Migration from Python
+## Migration History
 
-This TypeScript implementation maintains full feature parity with the [Python version](https://github.com/schlp/open-meteo-mcp):
+### Python → TypeScript (Original Rewrite)
 
-| Feature | Python (FastMCP) | TypeScript (Deno) |
-|---------|------------------|-------------------|
-| MCP Tools | 11 | 11 ✅ |
-| MCP Resources | 4 | 4 ✅ |
-| MCP Prompts | 3 | 3 ✅ |
-| Tests | 137 | 168 ✅ |
-| Gzip Compression | ✅ | ✅ |
-| JSON Serialization | ✅ | ✅ |
+The TypeScript implementation maintains full feature parity with the [Python version](https://github.com/schlp/open-meteo-mcp):
 
-### Key Differences
+| Feature              | Python (FastMCP) | TypeScript |
+| -------------------- | ---------------- | ---------- |
+| MCP Tools            | 11               | 11 ✅      |
+| MCP Resources        | 4                | 4 ✅       |
+| MCP Prompts          | 3                | 3 ✅       |
+| Tests                | 137              | 168 ✅     |
+| Gzip Compression     | ✅               | ✅         |
 
-- **Runtime**: Python/FastMCP → TypeScript/Deno
-- **Validation**: Pydantic → Zod
-- **HTTP Client**: httpx → Native Fetch
-- **Testing**: pytest → Deno test
-- **Deployment**: FastMCP Cloud → Deno Deploy
+### Deno → Node.js (Feb 2026)
+
+Migration to Node.js 20 LTS+ for broader ecosystem compatibility:
+
+| Aspect          | Deno (v4.0.0)    | Node.js (v4.1.0) |
+| --------------- | ---------------- | ---------------- |
+| Runtime         | Deno 1.40+       | Node.js 20 LTS+  |
+| Package Manager | JSR/npm          | pnpm/npm         |
+| Build System    | esbuild          | tsc              |
+| Test Runner     | deno test        | node --test      |
+| Deployment      | Deno Deploy      | Docker           |
+| Test Count      | 144              | 168 ✅           |
+
+### Key Changes
+
+- **Runtime**: Deno → Node.js 20 LTS+ for universal compatibility
+- **Package Manager**: deno → pnpm for performance and consistency
+- **Build**: TypeScript native compilation via tsc
+- **Deployment**: Deno Deploy → Docker (multi-stage build)
+- **CLI**: deno task commands → pnpm commands
+- **Breaking Changes**: None - MCP protocol fully compatible
 
 ## Contributing
 
@@ -285,11 +329,12 @@ Contributions welcome! Please:
 
 ### Development Guidelines
 
-- Follow Deno style guide (`deno fmt`)
+- Follow Prettier style guide (`pnpm fmt`)
 - Add tests for new features
 - Update documentation
-- Ensure all tests pass (`deno test`)
-- Run type checking (`deno check`)
+- Ensure all tests pass (`pnpm test`)
+- Run type checking (`pnpm check`)
+- Run linting (`pnpm lint`)
 
 ## License
 
@@ -299,8 +344,9 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 - [Open-Meteo](https://open-meteo.com) - Free weather API
 - [Model Context Protocol](https://modelcontextprotocol.io) - AI integration standard
-- [Deno](https://deno.land) - Modern JavaScript/TypeScript runtime
+- [Node.js](https://nodejs.org) - JavaScript runtime
 - [Anthropic Claude](https://claude.ai) - AI assistant integration
+- [Deno](https://deno.land) - Initial TypeScript implementation (v1-4.0.0)
 
 ## Related Projects
 
