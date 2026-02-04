@@ -3,7 +3,8 @@
  * Migrated from Python pytest tests.
  */
 
-import { assert, assertEquals, assertExists } from "@std/assert";
+import { test } from "node:test";
+import { strict as assert } from "assert";
 import {
   assessSkiConditions,
   calculateAstronomyData,
@@ -18,175 +19,175 @@ import {
   interpretWeatherCode,
   normalizeAirQualityTimezone,
   normalizeTimezone,
-} from "../src/helpers.ts";
+} from "../src/helpers.js";
 
 // ============================================================================
 // InterpretWeatherCode Tests
 // ============================================================================
 
-Deno.test("interpretWeatherCode: clear sky", () => {
+test("interpretWeatherCode: clear sky", () => {
   const result = interpretWeatherCode(0);
-  assertEquals(result.description, "Clear sky");
-  assertEquals(result.category, "Clear");
-  assertEquals(result.severity, "none");
+  assert.equal(result.description, "Clear sky");
+  assert.equal(result.category, "Clear");
+  assert.equal(result.severity, "none");
 });
 
-Deno.test("interpretWeatherCode: partly cloudy", () => {
+test("interpretWeatherCode: partly cloudy", () => {
   const result = interpretWeatherCode(2);
-  assertEquals(result.description, "Partly cloudy");
-  assertEquals(result.category, "Cloudy");
-  assertEquals(result.severity, "low");
+  assert.equal(result.description, "Partly cloudy");
+  assert.equal(result.category, "Cloudy");
+  assert.equal(result.severity, "low");
 });
 
-Deno.test("interpretWeatherCode: moderate rain", () => {
+test("interpretWeatherCode: moderate rain", () => {
   const result = interpretWeatherCode(63);
-  assertEquals(result.description, "Moderate rain");
-  assertEquals(result.category, "Rain");
-  assertEquals(result.severity, "medium");
+  assert.equal(result.description, "Moderate rain");
+  assert.equal(result.category, "Rain");
+  assert.equal(result.severity, "medium");
 });
 
-Deno.test("interpretWeatherCode: heavy snow", () => {
+test("interpretWeatherCode: heavy snow", () => {
   const result = interpretWeatherCode(75);
-  assertEquals(result.description, "Heavy snow");
-  assertEquals(result.category, "Snow");
-  assertEquals(result.severity, "high");
+  assert.equal(result.description, "Heavy snow");
+  assert.equal(result.category, "Snow");
+  assert.equal(result.severity, "high");
 });
 
-Deno.test("interpretWeatherCode: thunderstorm", () => {
+test("interpretWeatherCode: thunderstorm", () => {
   const result = interpretWeatherCode(95);
-  assertEquals(result.description, "Thunderstorm");
-  assertEquals(result.category, "Thunderstorm");
-  assertEquals(result.severity, "high");
+  assert.equal(result.description, "Thunderstorm");
+  assert.equal(result.category, "Thunderstorm");
+  assert.equal(result.severity, "high");
 });
 
-Deno.test("interpretWeatherCode: unknown code", () => {
+test("interpretWeatherCode: unknown code", () => {
   const result = interpretWeatherCode(999);
   assert(result.description.includes("Unknown"));
-  assertEquals(result.category, "Unknown");
-  assertEquals(result.severity, "unknown");
+  assert.equal(result.category, "Unknown");
+  assert.equal(result.severity, "unknown");
 });
 
 // ============================================================================
 // GetWeatherCategory Tests
 // ============================================================================
 
-Deno.test("getWeatherCategory: clear category", () => {
-  assertEquals(getWeatherCategory(0), "Clear");
-  assertEquals(getWeatherCategory(1), "Clear");
+test("getWeatherCategory: clear category", () => {
+  assert.equal(getWeatherCategory(0), "Clear");
+  assert.equal(getWeatherCategory(1), "Clear");
 });
 
-Deno.test("getWeatherCategory: rain category", () => {
-  assertEquals(getWeatherCategory(61), "Rain");
-  assertEquals(getWeatherCategory(63), "Rain");
+test("getWeatherCategory: rain category", () => {
+  assert.equal(getWeatherCategory(61), "Rain");
+  assert.equal(getWeatherCategory(63), "Rain");
 });
 
-Deno.test("getWeatherCategory: snow category", () => {
-  assertEquals(getWeatherCategory(71), "Snow");
-  assertEquals(getWeatherCategory(75), "Snow");
+test("getWeatherCategory: snow category", () => {
+  assert.equal(getWeatherCategory(71), "Snow");
+  assert.equal(getWeatherCategory(75), "Snow");
 });
 
 // ============================================================================
 // GetTravelImpact Tests
 // ============================================================================
 
-Deno.test("getTravelImpact: no impact", () => {
-  assertEquals(getTravelImpact(0), "none");
-  assertEquals(getTravelImpact(1), "none");
+test("getTravelImpact: no impact", () => {
+  assert.equal(getTravelImpact(0), "none");
+  assert.equal(getTravelImpact(1), "none");
 });
 
-Deno.test("getTravelImpact: minor impact", () => {
-  assertEquals(getTravelImpact(51), "minor");
-  assertEquals(getTravelImpact(61), "minor");
+test("getTravelImpact: minor impact", () => {
+  assert.equal(getTravelImpact(51), "minor");
+  assert.equal(getTravelImpact(61), "minor");
 });
 
-Deno.test("getTravelImpact: moderate impact", () => {
-  assertEquals(getTravelImpact(63), "moderate");
-  assertEquals(getTravelImpact(45), "moderate");
+test("getTravelImpact: moderate impact", () => {
+  assert.equal(getTravelImpact(63), "moderate");
+  assert.equal(getTravelImpact(45), "moderate");
 });
 
-Deno.test("getTravelImpact: significant impact", () => {
-  assertEquals(getTravelImpact(65), "significant");
-  assertEquals(getTravelImpact(95), "significant");
+test("getTravelImpact: significant impact", () => {
+  assert.equal(getTravelImpact(65), "significant");
+  assert.equal(getTravelImpact(95), "significant");
 });
 
-Deno.test("getTravelImpact: severe impact", () => {
-  assertEquals(getTravelImpact(99), "severe");
+test("getTravelImpact: severe impact", () => {
+  assert.equal(getTravelImpact(99), "severe");
 });
 
 // ============================================================================
 // AssessSkiConditions Tests
 // ============================================================================
 
-Deno.test("assessSkiConditions: excellent conditions", () => {
+test("assessSkiConditions: excellent conditions", () => {
   const snowData = { snow_depth: 1.2, recent_snowfall: 15 };
   const weatherData = { temperature: -10, weather_code: 0 };
   const result = assessSkiConditions(snowData, weatherData);
-  assertEquals(result, "Excellent");
+  assert.equal(result, "Excellent");
 });
 
-Deno.test("assessSkiConditions: good conditions", () => {
+test("assessSkiConditions: good conditions", () => {
   const snowData = { snow_depth: 0.8, recent_snowfall: 2 };
   const weatherData = { temperature: -5, weather_code: 2 };
   const result = assessSkiConditions(snowData, weatherData);
-  assertEquals(result, "Good");
+  assert.equal(result, "Good");
 });
 
-Deno.test("assessSkiConditions: fair conditions", () => {
+test("assessSkiConditions: fair conditions", () => {
   const snowData = { snow_depth: 0.3, recent_snowfall: 0 };
   const weatherData = { temperature: 2, weather_code: 3 };
   const result = assessSkiConditions(snowData, weatherData);
-  assertEquals(result, "Fair");
+  assert.equal(result, "Fair");
 });
 
-Deno.test("assessSkiConditions: poor conditions", () => {
+test("assessSkiConditions: poor conditions", () => {
   const snowData = { snow_depth: 0.1, recent_snowfall: 0 };
   const weatherData = { temperature: 8, weather_code: 61 };
   const result = assessSkiConditions(snowData, weatherData);
-  assertEquals(result, "Poor");
+  assert.equal(result, "Poor");
 });
 
 // ============================================================================
 // FormatTemperature Tests
 // ============================================================================
 
-Deno.test("formatTemperature: positive temperature", () => {
-  assertEquals(formatTemperature(15.2), "15.2°C");
+test("formatTemperature: positive temperature", () => {
+  assert.equal(formatTemperature(15.2), "15.2°C");
 });
 
-Deno.test("formatTemperature: negative temperature", () => {
-  assertEquals(formatTemperature(-5.8), "-5.8°C");
+test("formatTemperature: negative temperature", () => {
+  assert.equal(formatTemperature(-5.8), "-5.8°C");
 });
 
-Deno.test("formatTemperature: zero temperature", () => {
-  assertEquals(formatTemperature(0.0), "0.0°C");
+test("formatTemperature: zero temperature", () => {
+  assert.equal(formatTemperature(0.0), "0.0°C");
 });
 
-Deno.test("formatTemperature: rounding", () => {
-  assertEquals(formatTemperature(15.234), "15.2°C");
-  assertEquals(formatTemperature(15.289), "15.3°C");
+test("formatTemperature: rounding", () => {
+  assert.equal(formatTemperature(15.234), "15.2°C");
+  assert.equal(formatTemperature(15.289), "15.3°C");
 });
 
 // ============================================================================
 // CalculateWindChill Tests
 // ============================================================================
 
-Deno.test("calculateWindChill: low wind no chill", () => {
+test("calculateWindChill: low wind no chill", () => {
   const result = calculateWindChill(5, 3);
-  assertEquals(result, 5);
+  assert.equal(result, 5);
 });
 
-Deno.test("calculateWindChill: moderate wind chill", () => {
+test("calculateWindChill: moderate wind chill", () => {
   const result = calculateWindChill(0, 20);
   assert(result < 0);
-  assertEquals(typeof result, "number");
+  assert.equal(typeof result, "number");
 });
 
-Deno.test("calculateWindChill: high wind chill", () => {
+test("calculateWindChill: high wind chill", () => {
   const result = calculateWindChill(-10, 40);
   assert(result < -10);
 });
 
-Deno.test("calculateWindChill: positive temp wind chill", () => {
+test("calculateWindChill: positive temp wind chill", () => {
   const result = calculateWindChill(10, 30);
   assert(result < 10);
 });
@@ -195,7 +196,7 @@ Deno.test("calculateWindChill: positive temp wind chill", () => {
 // GetSeasonalAdvice Tests
 // ============================================================================
 
-Deno.test("getSeasonalAdvice: winter advice", () => {
+test("getSeasonalAdvice: winter advice", () => {
   const advice = getSeasonalAdvice(12);
   assert(advice.includes("Winter"));
   assert(
@@ -204,12 +205,12 @@ Deno.test("getSeasonalAdvice: winter advice", () => {
   );
 });
 
-Deno.test("getSeasonalAdvice: spring advice", () => {
+test("getSeasonalAdvice: spring advice", () => {
   const advice = getSeasonalAdvice(4);
   assert(advice.includes("Spring"));
 });
 
-Deno.test("getSeasonalAdvice: summer advice", () => {
+test("getSeasonalAdvice: summer advice", () => {
   const advice = getSeasonalAdvice(7);
   assert(advice.includes("Summer"));
   assert(
@@ -218,7 +219,7 @@ Deno.test("getSeasonalAdvice: summer advice", () => {
   );
 });
 
-Deno.test("getSeasonalAdvice: autumn advice", () => {
+test("getSeasonalAdvice: autumn advice", () => {
   const advice = getSeasonalAdvice(10);
   assert(advice.includes("Autumn"));
 });
@@ -227,29 +228,29 @@ Deno.test("getSeasonalAdvice: autumn advice", () => {
 // FormatPrecipitation Tests
 // ============================================================================
 
-Deno.test("formatPrecipitation: no precipitation", () => {
-  assertEquals(formatPrecipitation(0.0), "No precipitation");
+test("formatPrecipitation: no precipitation", () => {
+  assert.equal(formatPrecipitation(0.0), "No precipitation");
 });
 
-Deno.test("formatPrecipitation: light precipitation", () => {
+test("formatPrecipitation: light precipitation", () => {
   const result = formatPrecipitation(0.5);
   assert(result.includes("0.5mm"));
   assert(result.toLowerCase().includes("light"));
 });
 
-Deno.test("formatPrecipitation: moderate precipitation", () => {
+test("formatPrecipitation: moderate precipitation", () => {
   const result = formatPrecipitation(3.0);
   assert(result.includes("3.0mm"));
   assert(result.toLowerCase().includes("moderate"));
 });
 
-Deno.test("formatPrecipitation: heavy precipitation", () => {
+test("formatPrecipitation: heavy precipitation", () => {
   const result = formatPrecipitation(7.5);
   assert(result.includes("7.5mm"));
   assert(result.toLowerCase().includes("heavy"));
 });
 
-Deno.test("formatPrecipitation: very heavy precipitation", () => {
+test("formatPrecipitation: very heavy precipitation", () => {
   const result = formatPrecipitation(15.0);
   assert(result.includes("15.0mm"));
   assert(result.toLowerCase().includes("very heavy"));
@@ -259,7 +260,7 @@ Deno.test("formatPrecipitation: very heavy precipitation", () => {
 // GenerateWeatherAlerts Tests
 // ============================================================================
 
-Deno.test("generateWeatherAlerts: heat alert generation", () => {
+test("generateWeatherAlerts: heat alert generation", () => {
   const current = { temperature: 32, windspeed: 10, weathercode: 0 };
   const hourly = {
     temperature_2m: [32, 33, 34, 35, 35, 34, 33, 32, ...Array(16).fill(20)],
@@ -280,7 +281,7 @@ Deno.test("generateWeatherAlerts: heat alert generation", () => {
   assert(heatAlerts.length > 0);
 });
 
-Deno.test("generateWeatherAlerts: cold alert generation", () => {
+test("generateWeatherAlerts: cold alert generation", () => {
   const current = { temperature: -15, windspeed: 10, weathercode: 0 };
   const hourly = {
     temperature_2m: [-15, -16, -17, ...Array(21).fill(10)],
@@ -300,7 +301,7 @@ Deno.test("generateWeatherAlerts: cold alert generation", () => {
   assert(coldAlerts.length > 0);
 });
 
-Deno.test("generateWeatherAlerts: no alerts for normal conditions", () => {
+test("generateWeatherAlerts: no alerts for normal conditions", () => {
   const current = { temperature: 15, windspeed: 10, weathercode: 2 };
   const hourly = {
     temperature_2m: Array(24).fill(15),
@@ -317,14 +318,14 @@ Deno.test("generateWeatherAlerts: no alerts for normal conditions", () => {
   };
   const alerts = generateWeatherAlerts(current, hourly, daily, "Europe/Zurich");
   const severeAlerts = alerts.filter((a) => a.severity === "warning");
-  assertEquals(severeAlerts.length, 0);
+  assert.equal(severeAlerts.length, 0);
 });
 
 // ============================================================================
 // CalculateComfortIndex Tests
 // ============================================================================
 
-Deno.test("calculateComfortIndex: perfect comfort", () => {
+test("calculateComfortIndex: perfect comfort", () => {
   const weather = {
     temperature: 20,
     relative_humidity_2m: 50,
@@ -336,10 +337,10 @@ Deno.test("calculateComfortIndex: perfect comfort", () => {
   const airQuality = { european_aqi: 20 };
   const result = calculateComfortIndex(weather, airQuality);
   assert(result.overall >= 80);
-  assertEquals(result.recommendation, "Perfect for outdoor activities");
+  assert.equal(result.recommendation, "Perfect for outdoor activities");
 });
 
-Deno.test("calculateComfortIndex: poor comfort", () => {
+test("calculateComfortIndex: poor comfort", () => {
   const weather = {
     temperature: -20,
     relative_humidity_2m: 80,
@@ -357,7 +358,7 @@ Deno.test("calculateComfortIndex: poor comfort", () => {
   );
 });
 
-Deno.test("calculateComfortIndex: all factors present", () => {
+test("calculateComfortIndex: all factors present", () => {
   const weather = {
     temperature: 15,
     relative_humidity_2m: 60,
@@ -367,81 +368,81 @@ Deno.test("calculateComfortIndex: all factors present", () => {
     weather_code: 2,
   };
   const result = calculateComfortIndex(weather);
-  assertExists(result.overall);
-  assertExists(result.factors);
-  assertExists(result.factors.thermal_comfort);
-  assertExists(result.factors.air_quality);
-  assertExists(result.factors.precipitation_risk);
-  assertExists(result.factors.uv_safety);
-  assertExists(result.factors.weather_condition);
+  assert.ok(result.overall);
+  assert.ok(result.factors);
+  assert.ok(result.factors.thermal_comfort);
+  assert.ok(result.factors.air_quality);
+  assert.ok(result.factors.precipitation_risk);
+  assert.ok(result.factors.uv_safety);
+  assert.ok(result.factors.weather_condition);
 });
 
 // ============================================================================
 // CalculateAstronomyData Tests
 // ============================================================================
 
-Deno.test("calculateAstronomyData: contains times", () => {
+test("calculateAstronomyData: contains times", () => {
   const result = calculateAstronomyData(47.3769, 8.5417, "Europe/Zurich");
-  assertExists(result.sunrise);
-  assertExists(result.sunset);
-  assertExists(result.day_length_hours);
+  assert.ok(result.sunrise);
+  assert.ok(result.sunset);
+  assert.ok(result.day_length_hours);
 });
 
-Deno.test("calculateAstronomyData: contains golden hour", () => {
+test("calculateAstronomyData: contains golden hour", () => {
   const result = calculateAstronomyData(47.3769, 8.5417, "Europe/Zurich");
-  assertExists(result.golden_hour);
-  assertExists(result.golden_hour?.start);
-  assertExists(result.golden_hour?.end);
+  assert.ok(result.golden_hour);
+  assert.ok(result.golden_hour?.start);
+  assert.ok(result.golden_hour?.end);
 });
 
-Deno.test("calculateAstronomyData: contains blue hour", () => {
+test("calculateAstronomyData: contains blue hour", () => {
   const result = calculateAstronomyData(47.3769, 8.5417, "Europe/Zurich");
-  assertExists(result.blue_hour);
-  assertExists(result.blue_hour?.start);
-  assertExists(result.blue_hour?.end);
+  assert.ok(result.blue_hour);
+  assert.ok(result.blue_hour?.start);
+  assert.ok(result.blue_hour?.end);
 });
 
 // ============================================================================
 // NormalizeTimezone Tests
 // ============================================================================
 
-Deno.test("normalizeTimezone: updates field", () => {
+test("normalizeTimezone: updates field", () => {
   const responseData = {
     timezone: "Europe/Zurich",
     hourly: { time: [] },
     daily: { time: [] },
   };
   const result = normalizeTimezone(responseData, "UTC");
-  assertEquals(result.timezone, "UTC");
+  assert.equal(result.timezone, "UTC");
 });
 
-Deno.test("normalizeTimezone: handles invalid data", () => {
+test("normalizeTimezone: handles invalid data", () => {
   const responseData = {};
   const result = normalizeTimezone(responseData);
-  assertEquals(typeof result, "object");
+  assert.equal(typeof result, "object");
 });
 
 // ============================================================================
 // NormalizeAirQualityTimezone Tests
 // ============================================================================
 
-Deno.test("normalizeAirQualityTimezone: updates timezone", () => {
+test("normalizeAirQualityTimezone: updates timezone", () => {
   const airQualityData = {
     timezone: "GMT",
     hourly: { time: [] },
     current: {},
   };
   const result = normalizeAirQualityTimezone(airQualityData, "Europe/Zurich");
-  assertEquals(result.timezone, "Europe/Zurich");
+  assert.equal(result.timezone, "Europe/Zurich");
 });
 
-Deno.test("normalizeAirQualityTimezone: preserves data", () => {
+test("normalizeAirQualityTimezone: preserves data", () => {
   const airQualityData = {
     timezone: "GMT",
     hourly: { time: [], pm2_5: [10, 15] },
     latitude: 47.3,
   };
   const result = normalizeAirQualityTimezone(airQualityData);
-  assertEquals(result.latitude, 47.3);
-  assertEquals((result.hourly as Record<string, unknown>).pm2_5, [10, 15]);
+  assert.equal(result.latitude, 47.3);
+  assert.equal((result.hourly as Record<string, unknown>).pm2_5, [10, 15]);
 });

@@ -3,8 +3,9 @@
  * Migrated from Python pytest tests.
  */
 
-import { assert, assertEquals, assertRejects } from "@std/assert";
-import { OpenMeteoClient } from "../src/client.ts";
+import { test } from "node:test";
+import { strict as assert } from "assert";
+import { OpenMeteoClient } from "../src/client.js";
 
 // Mock fetch helper
 function createMockFetch(responseData: unknown, status = 200): typeof fetch {
@@ -17,7 +18,7 @@ function createMockFetch(responseData: unknown, status = 200): typeof fetch {
     }) as Promise<Response>;
 }
 
-Deno.test("Geocoding: multiple results for same name", async () => {
+test("Geocoding: multiple results for same name", async () => {
   const mockData = {
     results: [
       {
@@ -58,25 +59,25 @@ Deno.test("Geocoding: multiple results for same name", async () => {
   const result = await client.searchLocation("Zurich", 10, "en");
 
   assert(result.results);
-  assertEquals(result.results.length, 2);
+  assert.equal(result.results.length, 2);
 
   // Check first result (Zurich, Switzerland)
   const first = result.results[0];
-  assertEquals(first.name, "Zurich");
-  assertEquals(first.latitude, 47.3769);
-  assertEquals(first.longitude, 8.5417);
-  assertEquals(first.country_code, "CH");
-  assertEquals(first.country, "Switzerland");
-  assertEquals(first.timezone, "Europe/Zurich");
-  assertEquals(first.population, 402762);
+  assert.equal(first.name, "Zurich");
+  assert.equal(first.latitude, 47.3769);
+  assert.equal(first.longitude, 8.5417);
+  assert.equal(first.country_code, "CH");
+  assert.equal(first.country, "Switzerland");
+  assert.equal(first.timezone, "Europe/Zurich");
+  assert.equal(first.population, 402762);
 
   // Check second result (Zurich, US)
   const second = result.results[1];
-  assertEquals(second.name, "Zurich");
-  assertEquals(second.country_code, "US");
+  assert.equal(second.name, "Zurich");
+  assert.equal(second.country_code, "US");
 });
 
-Deno.test("Geocoding: search with country filter", async () => {
+test("Geocoding: search with country filter", async () => {
   const mockData = {
     results: [
       {
@@ -99,11 +100,11 @@ Deno.test("Geocoding: search with country filter", async () => {
   const result = await client.searchLocation("Bern", 5, "en", "CH");
 
   assert(result.results);
-  assertEquals(result.results.length, 1);
-  assertEquals(result.results[0].country_code, "CH");
+  assert.equal(result.results.length, 1);
+  assert.equal(result.results[0].country_code, "CH");
 });
 
-Deno.test("Geocoding: no results found", async () => {
+test("Geocoding: no results found", async () => {
   const mockData = {
     results: null,
   };
@@ -115,10 +116,10 @@ Deno.test("Geocoding: no results found", async () => {
 
   // Client transforms null to empty array
   assert(Array.isArray(result.results));
-  assertEquals(result.results?.length, 0);
+  assert.equal(result.results?.length, 0);
 });
 
-Deno.test("Geocoding: fuzzy matching for typos", async () => {
+test("Geocoding: fuzzy matching for typos", async () => {
   const mockData = {
     results: [
       {
@@ -139,10 +140,10 @@ Deno.test("Geocoding: fuzzy matching for typos", async () => {
 
   assert(result.results);
   assert(result.results.length > 0);
-  assertEquals(result.results[0].name, "Zurich");
+  assert.equal(result.results[0].name, "Zurich");
 });
 
-Deno.test("Geocoding: count clamping to 1-100", async () => {
+test("Geocoding: count clamping to 1-100", async () => {
   const mockData = {
     results: [
       {
@@ -169,7 +170,7 @@ Deno.test("Geocoding: count clamping to 1-100", async () => {
   assert(result2);
 });
 
-Deno.test("Geocoding: multilingual search", async () => {
+test("Geocoding: multilingual search", async () => {
   const mockData = {
     results: [
       {
@@ -187,15 +188,15 @@ Deno.test("Geocoding: multilingual search", async () => {
   const result = await client.searchLocation("Zurich", 10, "de");
 
   assert(result.results);
-  assertEquals(result.results[0].name, "Zürich");
+  assert.equal(result.results[0].name, "Zürich");
 });
 
-Deno.test("Geocoding: HTTP error handling", async () => {
+test("Geocoding: HTTP error handling", async () => {
   globalThis.fetch = createMockFetch({}, 500);
 
   const client = new OpenMeteoClient();
 
-  await assertRejects(
+  await assert.rejects(
     async () => {
       await client.searchLocation("Test");
     },
@@ -203,7 +204,7 @@ Deno.test("Geocoding: HTTP error handling", async () => {
   );
 });
 
-Deno.test("Geocoding: invalid response gracefully handled", async () => {
+test("Geocoding: invalid response gracefully handled", async () => {
   const mockData = {
     invalid: "data",
   };
@@ -217,7 +218,7 @@ Deno.test("Geocoding: invalid response gracefully handled", async () => {
   assert(result.results === null || result.results?.length === 0);
 });
 
-Deno.test("Geocoding: popular Swiss locations", async () => {
+test("Geocoding: popular Swiss locations", async () => {
   const locations = [
     { name: "Zermatt", lat: 45.9763, lon: 7.6586 },
     { name: "Interlaken", lat: 46.6863, lon: 7.8632 },
@@ -241,7 +242,7 @@ Deno.test("Geocoding: popular Swiss locations", async () => {
     const result = await client.searchLocation(loc.name);
 
     assert(result.results);
-    assertEquals(result.results[0].latitude, loc.lat);
-    assertEquals(result.results[0].longitude, loc.lon);
+    assert.equal(result.results[0].latitude, loc.lat);
+    assert.equal(result.results[0].longitude, loc.lon);
   }
 });

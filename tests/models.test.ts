@@ -3,7 +3,8 @@
  * Migrated from Python pytest tests.
  */
 
-import { assertEquals, assertExists, assertThrows } from "@std/assert";
+import { test } from "node:test";
+import { strict as assert } from "assert";
 import {
   AirQualityForecastSchema,
   CurrentWeatherSchema,
@@ -18,14 +19,14 @@ import {
   SnowInputSchema,
   WeatherForecastSchema,
   WeatherInputSchema,
-} from "../src/models.ts";
+} from "../src/models.js";
 import { ZodError } from "zod";
 
 // ============================================================================
 // WeatherInput Tests
 // ============================================================================
 
-Deno.test("WeatherInput: valid weather input", () => {
+test("WeatherInput: valid weather input", () => {
   const result = WeatherInputSchema.parse({
     latitude: 46.9479,
     longitude: 7.4474,
@@ -34,26 +35,26 @@ Deno.test("WeatherInput: valid weather input", () => {
     timezone: "Europe/Zurich",
   });
 
-  assertEquals(result.latitude, 46.9479);
-  assertEquals(result.longitude, 7.4474);
-  assertEquals(result.forecast_days, 7);
-  assertEquals(result.include_hourly, true);
-  assertEquals(result.timezone, "Europe/Zurich");
+  assert.equal(result.latitude, 46.9479);
+  assert.equal(result.longitude, 7.4474);
+  assert.equal(result.forecast_days, 7);
+  assert.equal(result.include_hourly, true);
+  assert.equal(result.timezone, "Europe/Zurich");
 });
 
-Deno.test("WeatherInput: default values", () => {
+test("WeatherInput: default values", () => {
   const result = WeatherInputSchema.parse({
     latitude: 46.9479,
     longitude: 7.4474,
   });
 
-  assertEquals(result.forecast_days, 7);
-  assertEquals(result.include_hourly, true);
-  assertEquals(result.timezone, "auto");
+  assert.equal(result.forecast_days, 7);
+  assert.equal(result.include_hourly, true);
+  assert.equal(result.timezone, "auto");
 });
 
-Deno.test("WeatherInput: invalid latitude too high", () => {
-  assertThrows(
+test("WeatherInput: invalid latitude too high", () => {
+  assert.throws(
     () => {
       WeatherInputSchema.parse({
         latitude: 100,
@@ -65,8 +66,8 @@ Deno.test("WeatherInput: invalid latitude too high", () => {
   );
 });
 
-Deno.test("WeatherInput: invalid latitude too low", () => {
-  assertThrows(
+test("WeatherInput: invalid latitude too low", () => {
+  assert.throws(
     () => {
       WeatherInputSchema.parse({
         latitude: -100,
@@ -78,8 +79,8 @@ Deno.test("WeatherInput: invalid latitude too low", () => {
   );
 });
 
-Deno.test("WeatherInput: invalid longitude too high", () => {
-  assertThrows(
+test("WeatherInput: invalid longitude too high", () => {
+  assert.throws(
     () => {
       WeatherInputSchema.parse({
         latitude: 46.9479,
@@ -91,8 +92,8 @@ Deno.test("WeatherInput: invalid longitude too high", () => {
   );
 });
 
-Deno.test("WeatherInput: invalid longitude too low", () => {
-  assertThrows(
+test("WeatherInput: invalid longitude too low", () => {
+  assert.throws(
     () => {
       WeatherInputSchema.parse({
         latitude: 46.9479,
@@ -104,8 +105,8 @@ Deno.test("WeatherInput: invalid longitude too low", () => {
   );
 });
 
-Deno.test("WeatherInput: invalid forecast_days too low", () => {
-  assertThrows(
+test("WeatherInput: invalid forecast_days too low", () => {
+  assert.throws(
     () => {
       WeatherInputSchema.parse({
         latitude: 46.9479,
@@ -118,8 +119,8 @@ Deno.test("WeatherInput: invalid forecast_days too low", () => {
   );
 });
 
-Deno.test("WeatherInput: invalid forecast_days too high", () => {
-  assertThrows(
+test("WeatherInput: invalid forecast_days too high", () => {
+  assert.throws(
     () => {
       WeatherInputSchema.parse({
         latitude: 46.9479,
@@ -132,8 +133,8 @@ Deno.test("WeatherInput: invalid forecast_days too high", () => {
   );
 });
 
-Deno.test("WeatherInput: empty timezone", () => {
-  assertThrows(
+test("WeatherInput: empty timezone", () => {
+  assert.throws(
     () => {
       WeatherInputSchema.parse({
         latitude: 46.9479,
@@ -150,7 +151,7 @@ Deno.test("WeatherInput: empty timezone", () => {
 // SnowInput Tests
 // ============================================================================
 
-Deno.test("SnowInput: valid snow input", () => {
+test("SnowInput: valid snow input", () => {
   const result = SnowInputSchema.parse({
     latitude: 45.9763,
     longitude: 7.6586,
@@ -159,23 +160,23 @@ Deno.test("SnowInput: valid snow input", () => {
     timezone: "Europe/Zurich",
   });
 
-  assertEquals(result.latitude, 45.9763);
-  assertEquals(result.longitude, 7.6586);
-  assertEquals(result.forecast_days, 7);
-  assertEquals(result.timezone, "Europe/Zurich");
+  assert.equal(result.latitude, 45.9763);
+  assert.equal(result.longitude, 7.6586);
+  assert.equal(result.forecast_days, 7);
+  assert.equal(result.timezone, "Europe/Zurich");
 });
 
-Deno.test("SnowInput: default timezone", () => {
+test("SnowInput: default timezone", () => {
   const result = SnowInputSchema.parse({
     latitude: 45.9763,
     longitude: 7.6586,
   });
 
-  assertEquals(result.timezone, "Europe/Zurich");
+  assert.equal(result.timezone, "Europe/Zurich");
 });
 
-Deno.test("SnowInput: coordinate validation", () => {
-  assertThrows(() => {
+test("SnowInput: coordinate validation", () => {
+  assert.throws(() => {
     SnowInputSchema.parse({
       latitude: 100,
       longitude: 7.6586,
@@ -187,7 +188,7 @@ Deno.test("SnowInput: coordinate validation", () => {
 // CurrentWeather Tests
 // ============================================================================
 
-Deno.test("CurrentWeather: valid current weather", () => {
+test("CurrentWeather: valid current weather", () => {
   const result = CurrentWeatherSchema.parse({
     temperature: 15.2,
     windspeed: 12.5,
@@ -196,18 +197,18 @@ Deno.test("CurrentWeather: valid current weather", () => {
     time: "2026-01-09T09:00",
   });
 
-  assertEquals(result.temperature, 15.2);
-  assertEquals(result.windspeed, 12.5);
-  assertEquals(result.winddirection, 180);
-  assertEquals(result.weathercode, 2);
-  assertEquals(result.time, "2026-01-09T09:00");
+  assert.equal(result.temperature, 15.2);
+  assert.equal(result.windspeed, 12.5);
+  assert.equal(result.winddirection, 180);
+  assert.equal(result.weathercode, 2);
+  assert.equal(result.time, "2026-01-09T09:00");
 });
 
 // ============================================================================
 // WeatherForecast Tests
 // ============================================================================
 
-Deno.test("WeatherForecast: valid weather forecast", () => {
+test("WeatherForecast: valid weather forecast", () => {
   const result = WeatherForecastSchema.parse({
     latitude: 46.9479,
     longitude: 7.4474,
@@ -238,33 +239,33 @@ Deno.test("WeatherForecast: valid weather forecast", () => {
     },
   });
 
-  assertEquals(result.latitude, 46.9479);
-  assertExists(result.current_weather);
-  assertEquals(result.current_weather?.temperature, 15.2);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.time.length, 2);
-  assertExists(result.daily);
-  assertEquals(result.daily?.time.length, 1);
+  assert.equal(result.latitude, 46.9479);
+  assert.ok(result.current_weather);
+  assert.equal(result.current_weather?.temperature, 15.2);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.time.length, 2);
+  assert.ok(result.daily);
+  assert.equal(result.daily?.time.length, 1);
 });
 
-Deno.test("WeatherForecast: minimal weather forecast", () => {
+test("WeatherForecast: minimal weather forecast", () => {
   const result = WeatherForecastSchema.parse({
     latitude: 46.9479,
     longitude: 7.4474,
     timezone: "Europe/Zurich",
   });
 
-  assertEquals(result.latitude, 46.9479);
-  assertEquals(result.current_weather, undefined);
-  assertEquals(result.hourly, undefined);
-  assertEquals(result.daily, undefined);
+  assert.equal(result.latitude, 46.9479);
+  assert.equal(result.current_weather, undefined);
+  assert.equal(result.hourly, undefined);
+  assert.equal(result.daily, undefined);
 });
 
 // ============================================================================
 // SnowConditions Tests
 // ============================================================================
 
-Deno.test("SnowConditions: valid snow conditions", () => {
+test("SnowConditions: valid snow conditions", () => {
   const result = SnowConditionsSchema.parse({
     latitude: 45.9763,
     longitude: 7.6586,
@@ -285,30 +286,30 @@ Deno.test("SnowConditions: valid snow conditions", () => {
     },
   });
 
-  assertEquals(result.latitude, 45.9763);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.time.length, 2);
-  assertExists(result.daily);
-  assertEquals(result.daily?.snowfall_sum[0], 2.5);
+  assert.equal(result.latitude, 45.9763);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.time.length, 2);
+  assert.ok(result.daily);
+  assert.equal(result.daily?.snowfall_sum[0], 2.5);
 });
 
 // ============================================================================
 // Model Serialization Tests
 // ============================================================================
 
-Deno.test("Serialization: WeatherInput to object", () => {
+test("Serialization: WeatherInput to object", () => {
   const input = WeatherInputSchema.parse({
     latitude: 46.9479,
     longitude: 7.4474,
   });
 
   // Zod parse returns a plain object, so we can directly access properties
-  assertEquals(input.latitude, 46.9479);
-  assertEquals(input.longitude, 7.4474);
-  assertEquals(input.forecast_days, 7);
+  assert.equal(input.latitude, 46.9479);
+  assert.equal(input.longitude, 7.4474);
+  assert.equal(input.forecast_days, 7);
 });
 
-Deno.test("Serialization: WeatherForecast from object", () => {
+test("Serialization: WeatherForecast from object", () => {
   const data = {
     latitude: 46.9479,
     longitude: 7.4474,
@@ -324,15 +325,15 @@ Deno.test("Serialization: WeatherForecast from object", () => {
 
   const result = WeatherForecastSchema.parse(data);
 
-  assertEquals(result.latitude, 46.9479);
-  assertEquals(result.current_weather?.temperature, 15.2);
+  assert.equal(result.latitude, 46.9479);
+  assert.equal(result.current_weather?.temperature, 15.2);
 });
 
 // ============================================================================
 // Additional Model Tests
 // ============================================================================
 
-Deno.test("GeocodingResult: valid geocoding result", () => {
+test("GeocodingResult: valid geocoding result", () => {
   const result = GeocodingResultSchema.parse({
     id: 1,
     name: "Zurich",
@@ -345,12 +346,12 @@ Deno.test("GeocodingResult: valid geocoding result", () => {
     population: 402762,
   });
 
-  assertEquals(result.name, "Zurich");
-  assertEquals(result.country_code, "CH");
-  assertEquals(result.population, 402762);
+  assert.equal(result.name, "Zurich");
+  assert.equal(result.country_code, "CH");
+  assert.equal(result.population, 402762);
 });
 
-Deno.test("GeocodingResponse: valid response with results", () => {
+test("GeocodingResponse: valid response with results", () => {
   const result = GeocodingResponseSchema.parse({
     results: [
       {
@@ -364,12 +365,12 @@ Deno.test("GeocodingResponse: valid response with results", () => {
     generationtime_ms: 0.5,
   });
 
-  assertExists(result.results);
-  assertEquals(result.results?.length, 1);
-  assertEquals(result.results?.[0].name, "Zurich");
+  assert.ok(result.results);
+  assert.equal(result.results?.length, 1);
+  assert.equal(result.results?.[0].name, "Zurich");
 });
 
-Deno.test("AirQualityForecast: valid air quality forecast", () => {
+test("AirQualityForecast: valid air quality forecast", () => {
   const result = AirQualityForecastSchema.parse({
     latitude: 47.3769,
     longitude: 8.5417,
@@ -391,14 +392,14 @@ Deno.test("AirQualityForecast: valid air quality forecast", () => {
     },
   });
 
-  assertEquals(result.latitude, 47.3769);
-  assertExists(result.current);
-  assertEquals(result.current?.european_aqi, 25);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.time.length, 2);
+  assert.equal(result.latitude, 47.3769);
+  assert.ok(result.current);
+  assert.equal(result.current?.european_aqi, 25);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.time.length, 2);
 });
 
-Deno.test("MarineConditions: valid marine conditions", () => {
+test("MarineConditions: valid marine conditions", () => {
   const result = MarineConditionsSchema.parse({
     latitude: 45.5,
     longitude: 9.2,
@@ -417,51 +418,51 @@ Deno.test("MarineConditions: valid marine conditions", () => {
     },
   });
 
-  assertEquals(result.latitude, 45.5);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.wave_height?.length, 2);
-  assertExists(result.daily);
+  assert.equal(result.latitude, 45.5);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.wave_height?.length, 2);
+  assert.ok(result.daily);
 });
 
 // ============================================================================
 // HourlyWeather and DailyWeather Default Arrays
 // ============================================================================
 
-Deno.test("HourlyWeather: handles default empty arrays", () => {
+test("HourlyWeather: handles default empty arrays", () => {
   const result = HourlyWeatherSchema.parse({});
 
-  assertEquals(result.time, []);
-  assertEquals(result.temperature_2m, []);
-  assertEquals(result.precipitation, []);
-  assertEquals(result.weather_code, []);
-  assertEquals(result.wind_speed_10m, []);
+  assert.equal(result.time, []);
+  assert.equal(result.temperature_2m, []);
+  assert.equal(result.precipitation, []);
+  assert.equal(result.weather_code, []);
+  assert.equal(result.wind_speed_10m, []);
 });
 
-Deno.test("DailyWeather: handles default empty arrays", () => {
+test("DailyWeather: handles default empty arrays", () => {
   const result = DailyWeatherSchema.parse({});
 
-  assertEquals(result.time, []);
-  assertEquals(result.temperature_2m_max, []);
-  assertEquals(result.temperature_2m_min, []);
-  assertEquals(result.precipitation_sum, []);
-  assertEquals(result.weather_code, []);
+  assert.equal(result.time, []);
+  assert.equal(result.temperature_2m_max, []);
+  assert.equal(result.temperature_2m_min, []);
+  assert.equal(result.precipitation_sum, []);
+  assert.equal(result.weather_code, []);
 });
 
-Deno.test("HourlySnow: handles default empty arrays", () => {
+test("HourlySnow: handles default empty arrays", () => {
   const result = HourlySnowSchema.parse({});
 
-  assertEquals(result.time, []);
-  assertEquals(result.temperature_2m, []);
-  assertEquals(result.snowfall, []);
-  assertEquals(result.snow_depth, []);
-  assertEquals(result.weather_code, []);
+  assert.equal(result.time, []);
+  assert.equal(result.temperature_2m, []);
+  assert.equal(result.snowfall, []);
+  assert.equal(result.snow_depth, []);
+  assert.equal(result.weather_code, []);
 });
 
-Deno.test("DailySnow: handles default empty arrays", () => {
+test("DailySnow: handles default empty arrays", () => {
   const result = DailySnowSchema.parse({});
 
-  assertEquals(result.time, []);
-  assertEquals(result.temperature_2m_max, []);
-  assertEquals(result.temperature_2m_min, []);
-  assertEquals(result.snowfall_sum, []);
+  assert.equal(result.time, []);
+  assert.equal(result.temperature_2m_max, []);
+  assert.equal(result.temperature_2m_min, []);
+  assert.equal(result.snowfall_sum, []);
 });

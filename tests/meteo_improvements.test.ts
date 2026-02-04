@@ -3,9 +3,11 @@
  * Tests country filtering, timezone consistency, weather alerts, and integration.
  * Migrated from Python pytest tests.
  */
-
-import { assert, assertEquals } from "@std/assert";
-import { OpenMeteoClient } from "../src/client.ts";
+import { test } from "node:test";
+import { strict as assert } from "assert";
+import { test } from "node:test";
+import { strict as assert } from "assert";
+import { OpenMeteoClient } from "../src/client.js";
 
 // Mock fetch helper
 function createMockFetch(responseData: unknown, status = 200): typeof fetch {
@@ -22,7 +24,7 @@ function createMockFetch(responseData: unknown, status = 200): typeof fetch {
 // Country Filtering Tests
 // ============================================================================
 
-Deno.test("Country Filtering: filter works correctly", async () => {
+test("Country Filtering: filter works correctly", async () => {
   const mockData = {
     results: [
       {
@@ -60,13 +62,13 @@ Deno.test("Country Filtering: filter works correctly", async () => {
 
   // Should only return Swiss results
   assert(result.results);
-  assertEquals(result.results.length, 1);
-  assertEquals(result.results[0].country_code, "CH");
-  assertEquals(result.results[0].name, "Thun");
-  assertEquals(result.results[0].country, "Switzerland");
+  assert.equal(result.results.length, 1);
+  assert.equal(result.results[0].country_code, "CH");
+  assert.equal(result.results[0].name, "Thun");
+  assert.equal(result.results[0].country, "Switzerland");
 });
 
-Deno.test("Country Filtering: no matches returns all results", async () => {
+test("Country Filtering: no matches returns all results", async () => {
   const mockData = {
     results: [
       {
@@ -94,10 +96,10 @@ Deno.test("Country Filtering: no matches returns all results", async () => {
 
   // Should return all results when no country matches
   assert(result.results);
-  assertEquals(result.results.length, 2);
+  assert.equal(result.results.length, 2);
 });
 
-Deno.test("Country Filtering: no filter returns all results", async () => {
+test("Country Filtering: no filter returns all results", async () => {
   const mockData = {
     results: [
       {
@@ -132,14 +134,14 @@ Deno.test("Country Filtering: no filter returns all results", async () => {
 
   // Should return all results
   assert(result.results);
-  assertEquals(result.results.length, 3);
+  assert.equal(result.results.length, 3);
 });
 
 // ============================================================================
 // Timezone Consistency Tests
 // ============================================================================
 
-Deno.test("Timezone Consistency: air quality accepts timezone parameter", async () => {
+test("Timezone Consistency: air quality accepts timezone parameter", async () => {
   const mockData = {
     latitude: 46.9479,
     longitude: 7.4474,
@@ -187,10 +189,10 @@ Deno.test("Timezone Consistency: air quality accepts timezone parameter", async 
   assert(fetchUrl.includes("timezone=Europe%2FZurich"));
 
   // Verify result has correct timezone
-  assertEquals(result.timezone, "Europe/Zurich");
+  assert.equal(result.timezone, "Europe/Zurich");
 });
 
-Deno.test("Timezone Consistency: same timezone across endpoints", async () => {
+test("Timezone Consistency: same timezone across endpoints", async () => {
   const weatherResponse = {
     latitude: 46.9479,
     longitude: 7.4474,
@@ -250,16 +252,16 @@ Deno.test("Timezone Consistency: same timezone across endpoints", async () => {
   );
 
   // Both should use same timezone
-  assertEquals(weather.timezone, "Europe/Zurich");
-  assertEquals(airQuality.timezone, "Europe/Zurich");
-  assertEquals(weather.timezone, airQuality.timezone);
+  assert.equal(weather.timezone, "Europe/Zurich");
+  assert.equal(airQuality.timezone, "Europe/Zurich");
+  assert.equal(weather.timezone, airQuality.timezone);
 });
 
 // ============================================================================
 // Weather Alerts Tests
 // ============================================================================
 
-Deno.test("Weather Alerts: heat alert generation", () => {
+test("Weather Alerts: heat alert generation", () => {
   const current = { temperature: 35.0, windspeed: 5.0 };
   const alerts: Array<{
     type: string;
@@ -277,13 +279,13 @@ Deno.test("Weather Alerts: heat alert generation", () => {
     });
   }
 
-  assertEquals(alerts.length, 1);
-  assertEquals(alerts[0].type, "heat");
-  assertEquals(alerts[0].severity, "watch"); // 35°C should trigger watch (not > 35)
+  assert.equal(alerts.length, 1);
+  assert.equal(alerts[0].type, "heat");
+  assert.equal(alerts[0].severity, "watch"); // 35°C should trigger watch (not > 35)
   assert(alerts[0].description.includes("35.0°C"));
 });
 
-Deno.test("Weather Alerts: cold alert generation", () => {
+test("Weather Alerts: cold alert generation", () => {
   const current = { temperature: -12.0, windspeed: 25.0 };
   const alerts: Array<{
     type: string;
@@ -306,13 +308,13 @@ Deno.test("Weather Alerts: cold alert generation", () => {
     });
   }
 
-  assertEquals(alerts.length, 1);
-  assertEquals(alerts[0].type, "cold");
-  assertEquals(alerts[0].severity, "warning"); // -27°C feels like should trigger warning
+  assert.equal(alerts.length, 1);
+  assert.equal(alerts[0].type, "cold");
+  assert.equal(alerts[0].severity, "warning"); // -27°C feels like should trigger warning
   assert(alerts[0].description.includes("-12.0°C"));
 });
 
-Deno.test("Weather Alerts: storm alert generation", () => {
+test("Weather Alerts: storm alert generation", () => {
   const current = { temperature: 20.0, windspeed: 85.0, weathercode: 95 };
   const alerts: Array<{
     type: string;
@@ -341,20 +343,20 @@ Deno.test("Weather Alerts: storm alert generation", () => {
     });
   }
 
-  assertEquals(alerts.length, 2);
+  assert.equal(alerts.length, 2);
 
   const stormAlert = alerts.find((a) => a.type === "storm");
   const windAlert = alerts.find((a) => a.type === "wind");
 
   assert(stormAlert);
   assert(windAlert);
-  assertEquals(stormAlert.severity, "warning");
-  assertEquals(windAlert.severity, "warning");
+  assert.equal(stormAlert.severity, "warning");
+  assert.equal(windAlert.severity, "warning");
   assert(stormAlert.description.includes("Thunderstorm"));
   assert(windAlert.description.includes("85.0 km/h"));
 });
 
-Deno.test("Weather Alerts: UV alert generation", () => {
+test("Weather Alerts: UV alert generation", () => {
   const daily = { uv_index_max: [11.0] };
   const alerts: Array<{
     type: string;
@@ -372,13 +374,13 @@ Deno.test("Weather Alerts: UV alert generation", () => {
     });
   }
 
-  assertEquals(alerts.length, 1);
-  assertEquals(alerts[0].type, "uv");
-  assertEquals(alerts[0].severity, "warning"); // UV 11 should trigger warning
+  assert.equal(alerts.length, 1);
+  assert.equal(alerts[0].type, "uv");
+  assert.equal(alerts[0].severity, "warning"); // UV 11 should trigger warning
   assert(alerts[0].description.includes("UV Index 11"));
 });
 
-Deno.test("Weather Alerts: precipitation alert generation", () => {
+test("Weather Alerts: precipitation alert generation", () => {
   const hourly = { precipitation: [0.0, 5.0, 15.0, 25.0, 2.0] };
   const alerts: Array<{
     type: string;
@@ -398,13 +400,13 @@ Deno.test("Weather Alerts: precipitation alert generation", () => {
     }
   }
 
-  assertEquals(alerts.length, 1);
-  assertEquals(alerts[0].type, "precipitation");
-  assertEquals(alerts[0].severity, "watch"); // 15mm should trigger watch
+  assert.equal(alerts.length, 1);
+  assert.equal(alerts[0].type, "precipitation");
+  assert.equal(alerts[0].severity, "watch"); // 15mm should trigger watch
   assert(alerts[0].description.includes("15.0mm/hour"));
 });
 
-Deno.test("Weather Alerts: no alerts for normal conditions", () => {
+test("Weather Alerts: no alerts for normal conditions", () => {
   const current = { temperature: 18.0, windspeed: 15.0, weathercode: 1 };
   const daily = { uv_index_max: [5.0] };
   const hourly = { precipitation: [0.0, 0.5, 1.0] };
@@ -443,14 +445,14 @@ Deno.test("Weather Alerts: no alerts for normal conditions", () => {
     }
   }
 
-  assertEquals(alerts.length, 0);
+  assert.equal(alerts.length, 0);
 });
 
 // ============================================================================
 // Integration Tests
 // ============================================================================
 
-Deno.test("Integration: end-to-end weather workflow", async () => {
+test("Integration: end-to-end weather workflow", async () => {
   const locationResponse = {
     results: [
       {
@@ -498,8 +500,8 @@ Deno.test("Integration: end-to-end weather workflow", async () => {
   // Step 1: Search for location with country filter
   const locationResult = await client.searchLocation("Bern", 10, "en", "CH");
   assert(locationResult.results);
-  assertEquals(locationResult.results.length, 1);
-  assertEquals(locationResult.results[0].country_code, "CH");
+  assert.equal(locationResult.results.length, 1);
+  assert.equal(locationResult.results[0].country_code, "CH");
 
   // Step 2: Get weather data for location
   const location = locationResult.results[0];
@@ -512,10 +514,10 @@ Deno.test("Integration: end-to-end weather workflow", async () => {
   );
 
   // Step 3: Verify timezone consistency
-  assertEquals(weather.timezone, "Europe/Zurich");
+  assert.equal(weather.timezone, "Europe/Zurich");
 
   // Step 4: Check that we can generate alerts from this data
   const temp = weather.current_weather!.temperature;
-  assertEquals(temp, 32.0);
+  assert.equal(temp, 32.0);
   // This would trigger a heat alert (temp > 30)
 });

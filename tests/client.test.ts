@@ -3,8 +3,9 @@
  * TypeScript/Deno implementation with fetch mocking.
  */
 
-import { assertEquals, assertExists, assertRejects } from "@std/assert";
-import { OpenMeteoClient } from "../src/client.ts";
+import { test } from "node:test";
+import { strict as assert } from "assert";
+import { OpenMeteoClient } from "../src/client.js";
 
 // ============================================================================
 // Helper function to create mock fetch responses
@@ -39,7 +40,7 @@ function createMockFetchError(status: number): typeof fetch {
 // Weather API Tests
 // ============================================================================
 
-Deno.test("OpenMeteoClient: getWeather success", async () => {
+test("OpenMeteoClient: getWeather success", async () => {
   const mockData = {
     latitude: 46.9479,
     longitude: 7.4474,
@@ -85,17 +86,17 @@ Deno.test("OpenMeteoClient: getWeather success", async () => {
     "auto",
   );
 
-  assertEquals(result.latitude, 46.9479);
-  assertEquals(result.longitude, 7.4474);
-  assertExists(result.current_weather);
-  assertEquals(result.current_weather?.temperature, 15.2);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.time.length, 2);
-  assertExists(result.daily);
-  assertEquals(result.daily?.time.length, 1);
+  assert.equal(result.latitude, 46.9479);
+  assert.equal(result.longitude, 7.4474);
+  assert.ok(result.current_weather);
+  assert.equal(result.current_weather?.temperature, 15.2);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.time.length, 2);
+  assert.ok(result.daily);
+  assert.equal(result.daily?.time.length, 1);
 });
 
-Deno.test("OpenMeteoClient: getWeather without hourly", async () => {
+test("OpenMeteoClient: getWeather without hourly", async () => {
   const mockData = {
     latitude: 46.9479,
     longitude: 7.4474,
@@ -127,38 +128,38 @@ Deno.test("OpenMeteoClient: getWeather without hourly", async () => {
     "auto",
   );
 
-  assertExists(result.current_weather);
-  assertExists(result.daily);
-  assertEquals(result.hourly, undefined);
+  assert.ok(result.current_weather);
+  assert.ok(result.daily);
+  assert.equal(result.hourly, undefined);
 });
 
-Deno.test("OpenMeteoClient: getWeather HTTP error", async () => {
+test("OpenMeteoClient: getWeather HTTP error", async () => {
   globalThis.fetch = createMockFetchError(500);
 
   const client = new OpenMeteoClient();
 
-  await assertRejects(
+  await assert.rejects(
     () => client.getWeather(46.9479, 7.4474),
     Error,
     "HTTP error",
   );
 });
 
-Deno.test("OpenMeteoClient: getWeather invalid response", async () => {
+test("OpenMeteoClient: getWeather invalid response", async () => {
   const mockData = { invalid: "data" };
 
   globalThis.fetch = createMockFetch(mockData);
 
   const client = new OpenMeteoClient();
 
-  await assertRejects(
+  await assert.rejects(
     () => client.getWeather(46.9479, 7.4474),
     Error,
     "Failed to parse",
   );
 });
 
-Deno.test("OpenMeteoClient: forecast_days clamping", async () => {
+test("OpenMeteoClient: forecast_days clamping", async () => {
   const mockData = {
     latitude: 46.9479,
     longitude: 7.4474,
@@ -178,18 +179,18 @@ Deno.test("OpenMeteoClient: forecast_days clamping", async () => {
 
   // Test clamping to minimum (1)
   let result = await client.getWeather(46.9479, 7.4474, 0, false);
-  assertExists(result);
+  assert.ok(result);
 
   // Test clamping to maximum (16)
   result = await client.getWeather(46.9479, 7.4474, 20, false);
-  assertExists(result);
+  assert.ok(result);
 });
 
 // ============================================================================
 // Snow Conditions Tests
 // ============================================================================
 
-Deno.test("OpenMeteoClient: getSnowConditions success", async () => {
+test("OpenMeteoClient: getSnowConditions success", async () => {
   const mockData = {
     latitude: 45.9763,
     longitude: 7.6586,
@@ -225,35 +226,35 @@ Deno.test("OpenMeteoClient: getSnowConditions success", async () => {
     "Europe/Zurich",
   );
 
-  assertEquals(result.latitude, 45.9763);
-  assertEquals(result.longitude, 7.6586);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.time.length, 2);
-  assertEquals(result.hourly?.snow_depth[0], 1.2);
-  assertExists(result.daily);
-  assertEquals(result.daily?.snowfall_sum[0], 2.5);
+  assert.equal(result.latitude, 45.9763);
+  assert.equal(result.longitude, 7.6586);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.time.length, 2);
+  assert.equal(result.hourly?.snow_depth[0], 1.2);
+  assert.ok(result.daily);
+  assert.equal(result.daily?.snowfall_sum[0], 2.5);
 });
 
-Deno.test("OpenMeteoClient: getSnowConditions HTTP error", async () => {
+test("OpenMeteoClient: getSnowConditions HTTP error", async () => {
   globalThis.fetch = createMockFetchError(503);
 
   const client = new OpenMeteoClient();
 
-  await assertRejects(
+  await assert.rejects(
     () => client.getSnowConditions(45.9763, 7.6586),
     Error,
     "HTTP error",
   );
 });
 
-Deno.test("OpenMeteoClient: getSnowConditions invalid response", async () => {
+test("OpenMeteoClient: getSnowConditions invalid response", async () => {
   const mockData = { invalid: "snow_data" };
 
   globalThis.fetch = createMockFetch(mockData);
 
   const client = new OpenMeteoClient();
 
-  await assertRejects(
+  await assert.rejects(
     () => client.getSnowConditions(45.9763, 7.6586),
     Error,
     "Failed to parse",
@@ -264,7 +265,7 @@ Deno.test("OpenMeteoClient: getSnowConditions invalid response", async () => {
 // Air Quality Tests
 // ============================================================================
 
-Deno.test("OpenMeteoClient: getAirQuality success", async () => {
+test("OpenMeteoClient: getAirQuality success", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -291,14 +292,14 @@ Deno.test("OpenMeteoClient: getAirQuality success", async () => {
   const client = new OpenMeteoClient();
   const result = await client.getAirQuality(47.3769, 8.5417);
 
-  assertEquals(result.latitude, 47.3769);
-  assertExists(result.current);
-  assertEquals(result.current?.european_aqi, 25);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.time.length, 2);
+  assert.equal(result.latitude, 47.3769);
+  assert.ok(result.current);
+  assert.equal(result.current?.european_aqi, 25);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.time.length, 2);
 });
 
-Deno.test("OpenMeteoClient: getAirQuality without pollen", async () => {
+test("OpenMeteoClient: getAirQuality without pollen", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -314,11 +315,11 @@ Deno.test("OpenMeteoClient: getAirQuality without pollen", async () => {
   const client = new OpenMeteoClient();
   const result = await client.getAirQuality(47.3769, 8.5417, 5, false);
 
-  assertExists(result);
-  assertEquals(result.latitude, 47.3769);
+  assert.ok(result);
+  assert.equal(result.latitude, 47.3769);
 });
 
-Deno.test("OpenMeteoClient: getAirQuality forecast_days clamping", async () => {
+test("OpenMeteoClient: getAirQuality forecast_days clamping", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -335,18 +336,18 @@ Deno.test("OpenMeteoClient: getAirQuality forecast_days clamping", async () => {
 
   // Test clamping to minimum (1)
   let result = await client.getAirQuality(47.3769, 8.5417, 0);
-  assertExists(result);
+  assert.ok(result);
 
   // Test clamping to maximum (5)
   result = await client.getAirQuality(47.3769, 8.5417, 10);
-  assertExists(result);
+  assert.ok(result);
 });
 
 // ============================================================================
 // Geocoding Tests
 // ============================================================================
 
-Deno.test("OpenMeteoClient: searchLocation success", async () => {
+test("OpenMeteoClient: searchLocation success", async () => {
   const mockData = {
     results: [
       {
@@ -369,13 +370,13 @@ Deno.test("OpenMeteoClient: searchLocation success", async () => {
   const client = new OpenMeteoClient();
   const result = await client.searchLocation("Zurich");
 
-  assertExists(result.results);
-  assertEquals(result.results?.length, 1);
-  assertEquals(result.results?.[0].name, "Zurich");
-  assertEquals(result.results?.[0].country_code, "CH");
+  assert.ok(result.results);
+  assert.equal(result.results?.length, 1);
+  assert.equal(result.results?.[0].name, "Zurich");
+  assert.equal(result.results?.[0].country_code, "CH");
 });
 
-Deno.test("OpenMeteoClient: searchLocation with country filter", async () => {
+test("OpenMeteoClient: searchLocation with country filter", async () => {
   const mockData = {
     results: [
       {
@@ -401,12 +402,12 @@ Deno.test("OpenMeteoClient: searchLocation with country filter", async () => {
   const client = new OpenMeteoClient();
   const result = await client.searchLocation("Zurich", 10, "en", "CH");
 
-  assertExists(result.results);
-  assertEquals(result.results?.length, 1);
-  assertEquals(result.results?.[0].country_code, "CH");
+  assert.ok(result.results);
+  assert.equal(result.results?.length, 1);
+  assert.equal(result.results?.[0].country_code, "CH");
 });
 
-Deno.test("OpenMeteoClient: searchLocation count clamping", async () => {
+test("OpenMeteoClient: searchLocation count clamping", async () => {
   const mockData = {
     results: [
       { id: 1, name: "Test", latitude: 47.0, longitude: 8.0 },
@@ -419,18 +420,18 @@ Deno.test("OpenMeteoClient: searchLocation count clamping", async () => {
 
   // Test clamping to minimum (1)
   let result = await client.searchLocation("Test", 0);
-  assertExists(result);
+  assert.ok(result);
 
   // Test clamping to maximum (100)
   result = await client.searchLocation("Test", 150);
-  assertExists(result);
+  assert.ok(result);
 });
 
 // ============================================================================
 // Historical Weather Tests
 // ============================================================================
 
-Deno.test("OpenMeteoClient: getHistoricalWeather success", async () => {
+test("OpenMeteoClient: getHistoricalWeather success", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -454,12 +455,12 @@ Deno.test("OpenMeteoClient: getHistoricalWeather success", async () => {
     "2023-01-02",
   );
 
-  assertEquals(result.latitude, 47.3769);
-  assertExists(result.daily);
-  assertEquals(result.daily?.time.length, 2);
+  assert.equal(result.latitude, 47.3769);
+  assert.ok(result.daily);
+  assert.equal(result.daily?.time.length, 2);
 });
 
-Deno.test("OpenMeteoClient: getHistoricalWeather with hourly", async () => {
+test("OpenMeteoClient: getHistoricalWeather with hourly", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -493,16 +494,16 @@ Deno.test("OpenMeteoClient: getHistoricalWeather with hourly", async () => {
     true,
   );
 
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.time.length, 2);
-  assertExists(result.daily);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.time.length, 2);
+  assert.ok(result.daily);
 });
 
 // ============================================================================
 // Marine Conditions Tests
 // ============================================================================
 
-Deno.test("OpenMeteoClient: getMarineConditions success", async () => {
+test("OpenMeteoClient: getMarineConditions success", async () => {
   const mockData = {
     latitude: 45.5,
     longitude: 9.2,
@@ -526,46 +527,46 @@ Deno.test("OpenMeteoClient: getMarineConditions success", async () => {
   const client = new OpenMeteoClient();
   const result = await client.getMarineConditions(45.5, 9.2);
 
-  assertEquals(result.latitude, 45.5);
-  assertExists(result.hourly);
-  assertEquals(result.hourly?.wave_height?.length, 2);
-  assertExists(result.daily);
+  assert.equal(result.latitude, 45.5);
+  assert.ok(result.hourly);
+  assert.equal(result.hourly?.wave_height?.length, 2);
+  assert.ok(result.daily);
 });
 
 // ============================================================================
 // Client Utility Tests
 // ============================================================================
 
-Deno.test("OpenMeteoClient: toDict returns client state", () => {
+test("OpenMeteoClient: toDict returns client state", () => {
   const client = new OpenMeteoClient();
   const dict = client.toDict();
 
-  assertExists(dict.base_url);
-  assertEquals(dict.base_url, "https://api.open-meteo.com/v1");
-  assertEquals(dict.timeout, 30000);
+  assert.ok(dict.base_url);
+  assert.equal(dict.base_url, "https://api.open-meteo.com/v1");
+  assert.equal(dict.timeout, 30000);
 });
 
-Deno.test("OpenMeteoClient: toJSON returns JSON string", () => {
+test("OpenMeteoClient: toJSON returns JSON string", () => {
   const client = new OpenMeteoClient();
   const json = client.toJSON();
 
-  assertExists(json);
+  assert.ok(json);
   const parsed = JSON.parse(json);
-  assertEquals(parsed.base_url, "https://api.open-meteo.com/v1");
+  assert.equal(parsed.base_url, "https://api.open-meteo.com/v1");
 });
 
-Deno.test("OpenMeteoClient: toString returns description", () => {
+test("OpenMeteoClient: toString returns description", () => {
   const client = new OpenMeteoClient();
   const str = client.toString();
 
-  assertEquals(str, "OpenMeteoClient(base_url=https://api.open-meteo.com/v1)");
+  assert.equal(str, "OpenMeteoClient(base_url=https://api.open-meteo.com/v1)");
 });
 
-Deno.test("OpenMeteoClient: custom timeout", () => {
+test("OpenMeteoClient: custom timeout", () => {
   const client = new OpenMeteoClient(60000);
   const dict = client.toDict();
 
-  assertEquals(dict.timeout, 60000);
+  assert.equal(dict.timeout, 60000);
 });
 
 // Note: Timeout tests removed as they're implementation-specific and flaky in test environments

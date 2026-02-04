@@ -3,8 +3,9 @@
  * Additional tests beyond basic client.test.ts coverage.
  */
 
-import { assert, assertEquals } from "@std/assert";
-import { OpenMeteoClient } from "../src/client.ts";
+import { test } from "node:test";
+import { strict as assert } from "assert";
+import { OpenMeteoClient } from "../src/client.js";
 
 // Mock fetch helper
 function createMockFetch(responseData: unknown, status = 200): typeof fetch {
@@ -17,7 +18,7 @@ function createMockFetch(responseData: unknown, status = 200): typeof fetch {
     }) as Promise<Response>;
 }
 
-Deno.test("AirQuality: high pollution levels", async () => {
+test("AirQuality: high pollution levels", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -53,13 +54,13 @@ Deno.test("AirQuality: high pollution levels", async () => {
   const result = await client.getAirQuality(47.3769, 8.5417);
 
   assert(result.current);
-  assertEquals(result.current.european_aqi, 85); // Very Poor
-  assertEquals(result.current.us_aqi, 175); // Unhealthy
+  assert.equal(result.current.european_aqi, 85); // Very Poor
+  assert.equal(result.current.us_aqi, 175); // Unhealthy
   assert((result.current.pm2_5 || 0) > 50); // High PM2.5
   assert((result.current.uv_index || 0) > 8); // Very High UV
 });
 
-Deno.test("AirQuality: pollen season with high counts", async () => {
+test("AirQuality: pollen season with high counts", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -107,7 +108,7 @@ Deno.test("AirQuality: pollen season with high counts", async () => {
   assert(result.hourly.grass_pollen[0] > 50); // High grass pollen
 });
 
-Deno.test("AirQuality: minimal data with only required fields", async () => {
+test("AirQuality: minimal data with only required fields", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -119,12 +120,12 @@ Deno.test("AirQuality: minimal data with only required fields", async () => {
   const client = new OpenMeteoClient();
   const result = await client.getAirQuality(47.3769, 8.5417);
 
-  assertEquals(result.latitude, 47.3769);
-  assertEquals(result.longitude, 8.5417);
+  assert.equal(result.latitude, 47.3769);
+  assert.equal(result.longitude, 8.5417);
   // current and hourly may be undefined
 });
 
-Deno.test("AirQuality: UV index level - Low (1.5)", async () => {
+test("AirQuality: UV index level - Low (1.5)", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -160,10 +161,10 @@ Deno.test("AirQuality: UV index level - Low (1.5)", async () => {
   const result = await client.getAirQuality(47.3769, 8.5417);
 
   assert(result.current);
-  assertEquals(result.current.uv_index, 1.5); // Low
+  assert.equal(result.current.uv_index, 1.5); // Low
 });
 
-Deno.test("AirQuality: UV index level - Moderate (4.0)", async () => {
+test("AirQuality: UV index level - Moderate (4.0)", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -199,10 +200,10 @@ Deno.test("AirQuality: UV index level - Moderate (4.0)", async () => {
   const result = await client.getAirQuality(47.3769, 8.5417);
 
   assert(result.current);
-  assertEquals(result.current.uv_index, 4.0); // Moderate
+  assert.equal(result.current.uv_index, 4.0); // Moderate
 });
 
-Deno.test("AirQuality: UV index level - Extreme (11.5)", async () => {
+test("AirQuality: UV index level - Extreme (11.5)", async () => {
   const mockData = {
     latitude: 47.3769,
     longitude: 8.5417,
@@ -238,5 +239,5 @@ Deno.test("AirQuality: UV index level - Extreme (11.5)", async () => {
   const result = await client.getAirQuality(47.3769, 8.5417);
 
   assert(result.current);
-  assertEquals(result.current.uv_index, 11.5); // Extreme
+  assert.equal(result.current.uv_index, 11.5); // Extreme
 });

@@ -4,8 +4,9 @@
  * This significantly increases coverage for server.ts.
  */
 
-import { assert, assertEquals, assertExists, assertRejects } from "@std/assert";
-import { handleToolCall } from "../src/server.ts";
+import { test } from "node:test";
+import { strict as assert } from "assert";
+import { handleToolCall } from "../src/server.js";
 import type { CallToolRequest } from "@modelcontextprotocol/sdk/types.js";
 
 // Mock OpenMeteoClient for testing
@@ -131,7 +132,7 @@ const mockMarineData = {
 // Tool Call Tests
 // ============================================================================
 
-Deno.test("handleToolCall: meteo__get_weather with minimal args", async () => {
+test("handleToolCall: meteo__get_weather with minimal args", async () => {
   mockFetch(mockWeatherData);
 
   const request: CallToolRequest = {
@@ -147,18 +148,18 @@ Deno.test("handleToolCall: meteo__get_weather with minimal args", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
-  assertEquals(result.content.length, 1);
-  assertEquals(result.content[0].type, "text");
+  assert.ok(result.content);
+  assert.equal(result.content.length, 1);
+  assert.equal(result.content[0].type, "text");
 
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.latitude, 47.3769);
-  assertEquals(data.timezone, "Europe/Zurich");
+  assert.equal(data.latitude, 47.3769);
+  assert.equal(data.timezone, "Europe/Zurich");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_weather with all args", async () => {
+test("handleToolCall: meteo__get_weather with all args", async () => {
   mockFetch(mockWeatherData);
 
   const request: CallToolRequest = {
@@ -177,14 +178,14 @@ Deno.test("handleToolCall: meteo__get_weather with all args", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.current_weather);
+  assert.ok(data.current_weather);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_snow_conditions", async () => {
+test("handleToolCall: meteo__get_snow_conditions", async () => {
   mockFetch(mockSnowData);
 
   const request: CallToolRequest = {
@@ -203,14 +204,14 @@ Deno.test("handleToolCall: meteo__get_snow_conditions", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.timezone, "Europe/Zurich");
+  assert.equal(data.timezone, "Europe/Zurich");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__search_location", async () => {
+test("handleToolCall: meteo__search_location", async () => {
   mockFetch(mockGeocodingData);
 
   const request: CallToolRequest = {
@@ -227,14 +228,14 @@ Deno.test("handleToolCall: meteo__search_location", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.results);
+  assert.ok(data.results);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__search_location with country filter", async () => {
+test("handleToolCall: meteo__search_location with country filter", async () => {
   mockFetch(mockGeocodingData);
 
   const request: CallToolRequest = {
@@ -250,14 +251,14 @@ Deno.test("handleToolCall: meteo__search_location with country filter", async ()
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.results);
+  assert.ok(data.results);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_air_quality", async () => {
+test("handleToolCall: meteo__get_air_quality", async () => {
   mockFetch(mockAirQualityData);
 
   const request: CallToolRequest = {
@@ -275,14 +276,14 @@ Deno.test("handleToolCall: meteo__get_air_quality", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.current);
+  assert.ok(data.current);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_weather_alerts", async () => {
+test("handleToolCall: meteo__get_weather_alerts", async () => {
   mockFetch(mockWeatherData);
 
   const request: CallToolRequest = {
@@ -300,16 +301,16 @@ Deno.test("handleToolCall: meteo__get_weather_alerts", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.alerts);
-  assertEquals(data.latitude, 47.3769);
-  assertEquals(data.longitude, 8.5417);
+  assert.ok(data.alerts);
+  assert.equal(data.latitude, 47.3769);
+  assert.equal(data.longitude, 8.5417);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_historical_weather", async () => {
+test("handleToolCall: meteo__get_historical_weather", async () => {
   mockFetch(mockHistoricalData);
 
   const request: CallToolRequest = {
@@ -329,14 +330,14 @@ Deno.test("handleToolCall: meteo__get_historical_weather", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.daily);
+  assert.ok(data.daily);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_marine_conditions", async () => {
+test("handleToolCall: meteo__get_marine_conditions", async () => {
   mockFetch(mockMarineData);
 
   const request: CallToolRequest = {
@@ -354,14 +355,14 @@ Deno.test("handleToolCall: meteo__get_marine_conditions", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.timezone, "Europe/Zurich");
+  assert.equal(data.timezone, "Europe/Zurich");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_comfort_index", async () => {
+test("handleToolCall: meteo__get_comfort_index", async () => {
   // Mock multiple API calls (weather + air quality)
   let callCount = 0;
   globalThis.fetch = (_url: string | URL | Request, _init?: RequestInit) => {
@@ -389,15 +390,15 @@ Deno.test("handleToolCall: meteo__get_comfort_index", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.comfort_index);
-  assertEquals(data.latitude, 47.3769);
+  assert.ok(data.comfort_index);
+  assert.equal(data.latitude, 47.3769);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_astronomy with auto timezone", async () => {
+test("handleToolCall: meteo__get_astronomy with auto timezone", async () => {
   mockFetch(mockWeatherData);
 
   const request: CallToolRequest = {
@@ -414,15 +415,15 @@ Deno.test("handleToolCall: meteo__get_astronomy with auto timezone", async () =>
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.astronomy);
-  assertEquals(data.timezone, "Europe/Zurich");
+  assert.ok(data.astronomy);
+  assert.equal(data.timezone, "Europe/Zurich");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_astronomy with explicit timezone", async () => {
+test("handleToolCall: meteo__get_astronomy with explicit timezone", async () => {
   const request: CallToolRequest = {
     method: "tools/call",
     params: {
@@ -437,15 +438,15 @@ Deno.test("handleToolCall: meteo__get_astronomy with explicit timezone", async (
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.astronomy);
-  assertEquals(data.timezone, "Europe/Zurich");
+  assert.ok(data.astronomy);
+  assert.equal(data.timezone, "Europe/Zurich");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__search_location_swiss basic", async () => {
+test("handleToolCall: meteo__search_location_swiss basic", async () => {
   mockFetch(mockGeocodingData);
 
   const request: CallToolRequest = {
@@ -460,15 +461,15 @@ Deno.test("handleToolCall: meteo__search_location_swiss basic", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.country, "CH");
-  assertEquals(data.query, "Zürich");
+  assert.equal(data.country, "CH");
+  assert.equal(data.query, "Zürich");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__search_location_swiss with features", async () => {
+test("handleToolCall: meteo__search_location_swiss with features", async () => {
   mockFetch({
     results: [
       {
@@ -509,15 +510,15 @@ Deno.test("handleToolCall: meteo__search_location_swiss with features", async ()
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.include_features, true);
-  assertEquals(data.language, "de");
+  assert.equal(data.include_features, true);
+  assert.equal(data.language, "de");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__compare_locations", async () => {
+test("handleToolCall: meteo__compare_locations", async () => {
   let callCount = 0;
   globalThis.fetch = (_url: string | URL | Request, _init?: RequestInit) => {
     callCount++;
@@ -548,17 +549,17 @@ Deno.test("handleToolCall: meteo__compare_locations", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.criteria, "best_overall");
-  assertExists(data.locations);
-  assertEquals(data.locations.length, 2);
-  assertExists(data.winner);
+  assert.equal(data.criteria, "best_overall");
+  assert.ok(data.locations);
+  assert.equal(data.locations.length, 2);
+  assert.ok(data.winner);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__compare_locations with warmest criteria", async () => {
+test("handleToolCall: meteo__compare_locations with warmest criteria", async () => {
   let callCount = 0;
   globalThis.fetch = (_url: string | URL | Request, _init?: RequestInit) => {
     callCount++;
@@ -586,14 +587,14 @@ Deno.test("handleToolCall: meteo__compare_locations with warmest criteria", asyn
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.criteria, "warmest");
+  assert.equal(data.criteria, "warmest");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__compare_locations with best_air_quality criteria", async () => {
+test("handleToolCall: meteo__compare_locations with best_air_quality criteria", async () => {
   let callCount = 0;
   globalThis.fetch = (_url: string | URL | Request, _init?: RequestInit) => {
     callCount++;
@@ -621,14 +622,14 @@ Deno.test("handleToolCall: meteo__compare_locations with best_air_quality criter
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.criteria, "best_air_quality");
+  assert.equal(data.criteria, "best_air_quality");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__compare_locations with calmest criteria", async () => {
+test("handleToolCall: meteo__compare_locations with calmest criteria", async () => {
   let callCount = 0;
   globalThis.fetch = (_url: string | URL | Request, _init?: RequestInit) => {
     callCount++;
@@ -656,14 +657,14 @@ Deno.test("handleToolCall: meteo__compare_locations with calmest criteria", asyn
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertEquals(data.criteria, "calmest");
+  assert.equal(data.criteria, "calmest");
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__compare_locations handles API error gracefully", async () => {
+test("handleToolCall: meteo__compare_locations handles API error gracefully", async () => {
   globalThis.fetch = (_url: string | URL | Request, _init?: RequestInit) => {
     return Promise.resolve(
       new Response(null, {
@@ -687,9 +688,9 @@ Deno.test("handleToolCall: meteo__compare_locations handles API error gracefully
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.locations);
+  assert.ok(data.locations);
   assert(data.locations[0].error);
 
   restoreFetch();
@@ -699,7 +700,7 @@ Deno.test("handleToolCall: meteo__compare_locations handles API error gracefully
 // Error Cases
 // ============================================================================
 
-Deno.test("handleToolCall: throws error for unknown tool", async () => {
+test("handleToolCall: throws error for unknown tool", async () => {
   const request: CallToolRequest = {
     method: "tools/call",
     params: {
@@ -708,14 +709,14 @@ Deno.test("handleToolCall: throws error for unknown tool", async () => {
     },
   };
 
-  await assertRejects(
+  await assert.rejects(
     async () => await handleToolCall(request),
     Error,
     "Unknown tool",
   );
 });
 
-Deno.test("handleToolCall: throws error when arguments are missing", async () => {
+test("handleToolCall: throws error when arguments are missing", async () => {
   const request: CallToolRequest = {
     method: "tools/call",
     params: {
@@ -723,14 +724,14 @@ Deno.test("handleToolCall: throws error when arguments are missing", async () =>
     },
   } as CallToolRequest;
 
-  await assertRejects(
+  await assert.rejects(
     async () => await handleToolCall(request),
     Error,
     "No arguments provided",
   );
 });
 
-Deno.test("handleToolCall: meteo__get_weather_alerts with default forecast_hours", async () => {
+test("handleToolCall: meteo__get_weather_alerts with default forecast_hours", async () => {
   mockFetch(mockWeatherData);
 
   const request: CallToolRequest = {
@@ -746,14 +747,14 @@ Deno.test("handleToolCall: meteo__get_weather_alerts with default forecast_hours
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.alerts);
+  assert.ok(data.alerts);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_snow_conditions with defaults", async () => {
+test("handleToolCall: meteo__get_snow_conditions with defaults", async () => {
   mockFetch(mockSnowData);
 
   const request: CallToolRequest = {
@@ -769,14 +770,14 @@ Deno.test("handleToolCall: meteo__get_snow_conditions with defaults", async () =
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.timezone);
+  assert.ok(data.timezone);
 
   restoreFetch();
 });
 
-Deno.test("handleToolCall: meteo__get_air_quality with defaults", async () => {
+test("handleToolCall: meteo__get_air_quality with defaults", async () => {
   mockFetch(mockAirQualityData);
 
   const request: CallToolRequest = {
@@ -792,9 +793,9 @@ Deno.test("handleToolCall: meteo__get_air_quality with defaults", async () => {
 
   const result = await handleToolCall(request);
 
-  assertExists(result.content);
+  assert.ok(result.content);
   const data = JSON.parse(result.content[0].text);
-  assertExists(data.current);
+  assert.ok(data.current);
 
   restoreFetch();
 });
