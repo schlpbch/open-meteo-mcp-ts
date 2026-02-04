@@ -1,0 +1,55 @@
+{
+  "name": "@schlp/open-meteo-mcp-ts",
+  "version": "4.1.0",
+  "description": "Open-Meteo MCP Server - Weather data via Model Context Protocol",
+  "type": "module",
+  "main": "dist/main.js",
+  "bin": {
+    "open-meteo-mcp": "dist/main.js"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "node dist/main.js",
+    "dev": "node --watch --loader tsx src/main.ts",
+    "build": "tsc",
+    "test": "node --loader tsx --test tests/**/*.test.ts",
+    "test:watch": "node --watch --loader tsx --test tests/**/*.test.ts",
+    "coverage": "node --loader tsx --test --coverage tests/**/*.test.ts",
+    "lint": "eslint src tests",
+    "fmt": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
+    "fmt:check": "prettier --check 'src/**/*.ts' 'tests/**/*.ts'",
+    "check": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "weather",
+    "open-meteo",
+    "claude",
+    "model-context-protocol"
+  ],
+  "author": "Open Meteo Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/schlp/open-meteo-mcp-ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "hono": "^4.0.0",
+    "zod": "^3.24.1",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0",
+    "eslint": "^8.55.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "prettier": "^3.1.0"
+  }
+}

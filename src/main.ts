@@ -1,10 +1,11 @@
-#!/usr/bin/env -S deno run --allow-net --allow-read --allow-env
+#!/usr/bin/env node
 
 /**
  * MCP Server entry point for Open-Meteo weather service.
  * Provides weather, snow, air quality, and location data via MCP protocol.
  */
 
+import process from "process";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -22,7 +23,7 @@ import {
   listResources,
   listTools,
   readResource,
-} from "./server.ts";
+} from "./server.js";
 
 /**
  * Initialize and run the MCP server
@@ -32,7 +33,7 @@ async function main() {
   const server = new Server(
     {
       name: "open-meteo-mcp",
-      version: "4.0.0",
+      version: "4.1.0",
     },
     {
       capabilities: {
@@ -62,9 +63,9 @@ async function main() {
 }
 
 // Run the server
-if (import.meta.main) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((error) => {
     console.error("Fatal error in main():", error);
-    Deno.exit(1);
+    process.exit(1);
   });
 }
