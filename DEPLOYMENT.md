@@ -1,6 +1,7 @@
 # Deployment Guide - Open-Meteo MCP TypeScript
 
-Comprehensive guide for deploying the Open-Meteo MCP weather data server in Node.js environments.
+Comprehensive guide for deploying the Open-Meteo MCP weather data server in
+Node.js environments.
 
 ## Quick Start
 
@@ -171,6 +172,7 @@ Create `.claude-desktop.json`:
 ## Troubleshooting
 
 ### Container fails to start
+
 ```bash
 # Check logs
 docker logs open-meteo-mcp
@@ -180,6 +182,7 @@ docker build -t open-meteo-mcp . --no-cache
 ```
 
 ### High memory usage
+
 ```bash
 # Check process memory
 docker stats open-meteo-mcp
@@ -188,6 +191,7 @@ docker stats open-meteo-mcp
 ```
 
 ### Build fails
+
 ```bash
 # Clean and rebuild
 pnpm install --frozen-lockfile

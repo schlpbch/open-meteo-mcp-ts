@@ -1,10 +1,13 @@
 # Claude Context: Open-Meteo MCP TypeScript
 
-This document provides context for AI assistants (like Claude) working with this codebase.
+This document provides context for AI assistants (like Claude) working with this
+codebase.
 
 ## Project Overview
 
-**Open-Meteo MCP TypeScript** is a Model Context Protocol (MCP) server that provides weather data from Open-Meteo to AI assistants. It's a TypeScript implementation running on Node.js 20 LTS+ for broader ecosystem compatibility.
+**Open-Meteo MCP TypeScript** is a Model Context Protocol (MCP) server that
+provides weather data from Open-Meteo to AI assistants. It's a TypeScript
+implementation running on Node.js 20 LTS+ for broader ecosystem compatibility.
 
 ### Key Facts
 
@@ -21,9 +24,12 @@ This document provides context for AI assistants (like Claude) working with this
 
 The server implements three core MCP primitives:
 
-1. **Tools** (11 total): Weather, air quality, snow conditions, location search, etc.
-2. **Resources** (4 total): Static data like WMO codes, API parameters, AQI reference
-3. **Prompts** (3 total): Pre-configured workflows for ski trips, outdoor activities, travel
+1. **Tools** (11 total): Weather, air quality, snow conditions, location search,
+   etc.
+2. **Resources** (4 total): Static data like WMO codes, API parameters, AQI
+   reference
+3. **Prompts** (3 total): Pre-configured workflows for ski trips, outdoor
+   activities, travel
 
 ### Core Files
 
@@ -57,7 +63,9 @@ src/
 - Error handling and logging
 
 **Key patterns:**
-- Uses `import.meta.url` with `process.argv[1]` for module detection (Node.js compatible)
+
+- Uses `import.meta.url` with `process.argv[1]` for module detection (Node.js
+  compatible)
 - Logs to stderr (stdout reserved for MCP protocol)
 - Graceful error handling with `process.exit()` codes
 
@@ -70,6 +78,7 @@ src/
 - Input validation and error handling
 
 **Important:**
+
 - All tools use Zod schema validation
 - Tools return structured content arrays
 - Resources are read from `src/data/` JSON files
@@ -83,6 +92,7 @@ src/
 - Error handling with meaningful messages
 
 **API methods:**
+
 - `searchLocation()`: Geocoding with fuzzy search
 - `getWeather()`: Current + forecast weather
 - `getAirQuality()`: AQI, pollutants, pollen
@@ -91,6 +101,7 @@ src/
 - `getHistoricalWeather()`: Past weather data
 
 **Performance:**
+
 - Gzip compression enabled
 - Connection reuse
 - Timeout handling
@@ -104,6 +115,7 @@ src/
 - Comprehensive type safety
 
 **Pattern:**
+
 ```typescript
 // Define schema
 export const WeatherResponseSchema = z.object({ ... });
@@ -121,6 +133,7 @@ export type WeatherResponse = z.infer<typeof WeatherResponseSchema>;
 - Swiss location utilities
 
 **Key functions:**
+
 - `formatTemperature()`: Celsius with symbol
 - `formatCoordinate()`: Lat/lon with directions
 - `getWeatherDescription()`: WMO code → human text
@@ -132,6 +145,7 @@ export type WeatherResponse = z.infer<typeof WeatherResponseSchema>;
 ### Common Tasks
 
 **Run tests:**
+
 ```bash
 pnpm test                   # Run all tests (168/168)
 pnpm test:watch             # Watch mode
@@ -139,12 +153,14 @@ pnpm coverage               # Generate coverage
 ```
 
 **Development:**
+
 ```bash
 pnpm dev                    # Hot reload with tsx
 pnpm start                  # Production mode
 ```
 
 **Code quality:**
+
 ```bash
 pnpm lint                   # Lint code (ESLint)
 pnpm fmt                    # Format code (Prettier)
@@ -152,6 +168,7 @@ pnpm check                  # Type check (tsc)
 ```
 
 **Testing with MCP Inspector:**
+
 ```bash
 npx @modelcontextprotocol/inspector node dist/main.js
 ```
@@ -226,6 +243,7 @@ npx @modelcontextprotocol/inspector node dist/main.js
 All tools follow the pattern: `meteo__<action>_<noun>`
 
 Examples:
+
 - `meteo__get_weather`
 - `meteo__search_location`
 - `meteo__get_comfort_index`
@@ -244,6 +262,7 @@ try {
 ### Zod Validation
 
 Always validate external data:
+
 ```typescript
 const validated = MySchema.parse(data); // Throws on invalid
 // Or
@@ -264,6 +283,7 @@ const result = MySchema.safeParse(data); // Returns { success, data, error }
 ### Test Patterns
 
 **Unit tests:**
+
 ```typescript
 Deno.test("formatTemperature() with valid input", () => {
   assertEquals(formatTemperature(20.5), "20.5°C");
@@ -271,6 +291,7 @@ Deno.test("formatTemperature() with valid input", () => {
 ```
 
 **Async tests:**
+
 ```typescript
 Deno.test("API call succeeds", async () => {
   const result = await client.getWeather(47.3769, 8.5417);
@@ -279,6 +300,7 @@ Deno.test("API call succeeds", async () => {
 ```
 
 **Mock HTTP:**
+
 ```typescript
 const mockFetch = (url: string) => {
   return Promise.resolve(new Response(JSON.stringify(mockData)));
@@ -308,10 +330,12 @@ const mockFetch = (url: string) => {
 File: [.github/workflows/deploy.yml](.github/workflows/deploy.yml)
 
 **Pipeline:**
+
 1. **Test job**: Format, lint, type check, tests
 2. **Deploy job**: Only runs on `main` branch pushes after tests pass
 
 **Configuration:**
+
 - Project: `open-meteo-mcp-ts`
 - Entrypoint: `src/main.ts`
 - Permissions: `id-token: write` (required for Deno Deploy)
@@ -335,6 +359,7 @@ Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 ```
 
 Or using Docker:
+
 ```json
 {
   "mcpServers": {
@@ -351,6 +376,7 @@ Or using Docker:
 ### Node.js Configuration
 
 No explicit permission model (implicit permissions):
+
 - Network access available by default
 - File system access available by default
 - Environment variables accessible via `process.env`
@@ -364,6 +390,7 @@ No explicit permission model (implicit permissions):
 ### API Rate Limits
 
 Open-Meteo is free but has limits:
+
 - 10,000 requests/day per IP
 - No authentication required
 - Respect fair use policy
@@ -371,6 +398,7 @@ Open-Meteo is free but has limits:
 ### Timezone Handling
 
 All timestamps use IANA timezone identifiers:
+
 - Switzerland: `Europe/Zurich`
 - Auto-detection from location coordinates
 - Use `date-fns-tz` for conversions
@@ -378,6 +406,7 @@ All timestamps use IANA timezone identifiers:
 ### Weather Codes
 
 WMO weather codes (0-99) are industry standard:
+
 - 0: Clear sky
 - 1-3: Mainly clear to overcast
 - 45-48: Fog
@@ -390,6 +419,7 @@ Reference: `src/data/wmo-codes.json`
 ### Swiss Locations
 
 Pre-configured dataset includes:
+
 - 100+ Swiss cities
 - Mountain passes (Gotthard, Simplon, etc.)
 - Ski resorts (Zermatt, St. Moritz, etc.)
@@ -399,6 +429,7 @@ Location: `src/data/swiss-locations.json`
 ### Type Safety
 
 The codebase is **strictly typed**:
+
 - No `any` types allowed
 - All API responses validated with Zod
 - Runtime type checking at boundaries
@@ -407,6 +438,7 @@ The codebase is **strictly typed**:
 ### Performance Targets
 
 Based on benchmarks vs Python version:
+
 - Response time: ≤125ms (P95)
 - Memory usage: ≤70 MB
 - Throughput: ≥280 RPS
@@ -425,6 +457,7 @@ Based on benchmarks vs Python version:
 ### Q: How do I debug MCP communication?
 
 Use MCP Inspector:
+
 ```bash
 npx @modelcontextprotocol/inspector deno run --allow-net --allow-read --allow-env src/main.ts
 ```
@@ -432,6 +465,7 @@ npx @modelcontextprotocol/inspector deno run --allow-net --allow-read --allow-en
 ### Q: How do I test against the real API?
 
 Tests use mocked responses by default. For integration testing:
+
 1. Create separate integration test file
 2. Use real API calls (requires `--allow-net`)
 3. Add retry logic and timeouts
@@ -447,9 +481,12 @@ Tests use mocked responses by default. For integration testing:
 
 ## Related Projects
 
-- **Swiss Mobility MCP**: `c:\Users\schlp\code\swiss-mobility-mcp` - Sister project for Swiss public transport
-- **Original Python version**: [schlp/open-meteo-mcp](https://github.com/schlp/open-meteo-mcp)
-- **MCP SDK**: [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk)
+- **Swiss Mobility MCP**: `c:\Users\schlp\code\swiss-mobility-mcp` - Sister
+  project for Swiss public transport
+- **Original Python version**:
+  [schlp/open-meteo-mcp](https://github.com/schlp/open-meteo-mcp)
+- **MCP SDK**:
+  [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/sdk)
 
 ## Migration History
 
@@ -457,29 +494,30 @@ Tests use mocked responses by default. For integration testing:
 
 Complete rewrite to TypeScript for better type safety and performance:
 
-| Aspect    | Python       | TypeScript             |
-| --------- | ------------ | ---------------------- |
-| Framework | FastMCP      | MCP SDK                |
-| Validation| Pydantic     | Zod                    |
-| Runtime   | Python 3.11+ | Deno 1.40+ (initial)   |
-| Tests     | 137 pytest   | 144+ Deno test         |
-| HTTP      | httpx        | Fetch API              |
+| Aspect     | Python       | TypeScript           |
+| ---------- | ------------ | -------------------- |
+| Framework  | FastMCP      | MCP SDK              |
+| Validation | Pydantic     | Zod                  |
+| Runtime    | Python 3.11+ | Deno 1.40+ (initial) |
+| Tests      | 137 pytest   | 144+ Deno test       |
+| HTTP       | httpx        | Fetch API            |
 
 ### From Deno to Node.js (Feb 2026)
 
 Migrated to Node.js 20 LTS+ for broader ecosystem acceptance:
 
-| Aspect      | Deno                          | Node.js            |
-| ----------- | ----------------------------- | ------------------ |
-| Runtime     | Deno 1.40+                    | Node.js 20 LTS+    |
-| Package Mgr | JSR/npm                       | npm/pnpm           |
-| Test Runner | deno test                     | node --test        |
+| Aspect      | Deno                             | Node.js               |
+| ----------- | -------------------------------- | --------------------- |
+| Runtime     | Deno 1.40+                       | Node.js 20 LTS+       |
+| Package Mgr | JSR/npm                          | npm/pnpm              |
+| Test Runner | deno test                        | node --test           |
 | Shebang     | `#!/usr/bin/env -S deno run ...` | `#!/usr/bin/env node` |
-| Build       | esbuild                       | tsc                |
-| Tests       | 144 tests                     | 168 tests          |
-| Deployment  | Deno Deploy                   | Docker             |
+| Build       | esbuild                          | tsc                   |
+| Tests       | 144 tests                        | 168 tests             |
+| Deployment  | Deno Deploy                      | Docker                |
 
-**Breaking changes**: None - MCP protocol is identical, binary execution compatible
+**Breaking changes**: None - MCP protocol is identical, binary execution
+compatible
 
 ## Tips for Working with This Codebase
 
@@ -498,11 +536,10 @@ Migrated to Node.js 20 LTS+ for broader ecosystem acceptance:
 - **Deployment Guide**: [DEPLOYMENT.md](DEPLOYMENT.md)
 - **API Reference**: [Open-Meteo Docs](https://open-meteo.com/en/docs)
 - **MCP Protocol**: [modelcontextprotocol.io](https://modelcontextprotocol.io)
-- **Issue Tracker**: [GitHub Issues](https://github.com/schlp/open-meteo-mcp-ts/issues)
+- **Issue Tracker**:
+  [GitHub Issues](https://github.com/schlp/open-meteo-mcp-ts/issues)
 
 ---
 
-**Last Updated**: 2026-02-04
-**Version**: 4.1.0 (Node.js)
-**Node.js Version**: 20.0.0+
-**Status**: ✅ Production Ready
+**Last Updated**: 2026-02-04 **Version**: 4.1.0 (Node.js) **Node.js Version**:
+20.0.0+ **Status**: ✅ Production Ready

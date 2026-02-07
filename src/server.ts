@@ -16,7 +16,11 @@ import type {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import { OpenMeteoClient } from "./client.js";
-import { calculateAstronomyData, calculateComfortIndex, generateWeatherAlerts } from "./helpers.js";
+import {
+  calculateAstronomyData,
+  calculateComfortIndex,
+  generateWeatherAlerts,
+} from "./helpers.js";
 
 // Initialize API client
 const client = new OpenMeteoClient();
@@ -45,7 +49,8 @@ function loadResourceFile(filename: string): string {
 export const TOOLS: Tool[] = [
   {
     name: "meteo__get_weather",
-    description: `Retrieves weather forecast for a location (temperature, rain, sunshine).
+    description:
+      `Retrieves weather forecast for a location (temperature, rain, sunshine).
 
 Get current weather conditions for any location in Switzerland (or worldwide).
 
@@ -88,7 +93,10 @@ Get current weather conditions for any location in Switzerland (or worldwide).
     inputSchema: {
       type: "object",
       properties: {
-        latitude: { type: "number", description: "Latitude in decimal degrees" },
+        latitude: {
+          type: "number",
+          description: "Latitude in decimal degrees",
+        },
         longitude: {
           type: "number",
           description: "Longitude in decimal degrees",
@@ -108,9 +116,15 @@ Get current weather conditions for any location in Switzerland (or worldwide).
       type: "object",
       properties: {
         name: { type: "string", description: "Location name to search" },
-        count: { type: "number", description: "Number of results (default: 10)" },
+        count: {
+          type: "number",
+          description: "Number of results (default: 10)",
+        },
         language: { type: "string", description: "Language (default: 'en')" },
-        country: { type: "string", description: "Country code filter (e.g., 'CH')" },
+        country: {
+          type: "string",
+          description: "Country code filter (e.g., 'CH')",
+        },
       },
       required: ["name"],
     },
@@ -133,13 +147,17 @@ Get current weather conditions for any location in Switzerland (or worldwide).
   },
   {
     name: "meteo__get_weather_alerts",
-    description: "Generate weather alerts based on thresholds (heat, cold, storm, UV warnings).",
+    description:
+      "Generate weather alerts based on thresholds (heat, cold, storm, UV warnings).",
     inputSchema: {
       type: "object",
       properties: {
         latitude: { type: "number" },
         longitude: { type: "number" },
-        forecast_hours: { type: "number", description: "Hours to check (1-168)" },
+        forecast_hours: {
+          type: "number",
+          description: "Hours to check (1-168)",
+        },
         timezone: { type: "string" },
       },
       required: ["latitude", "longitude"],
@@ -147,7 +165,8 @@ Get current weather conditions for any location in Switzerland (or worldwide).
   },
   {
     name: "meteo__get_historical_weather",
-    description: "Retrieves historical weather data for trend analysis. Access 80+ years of data.",
+    description:
+      "Retrieves historical weather data for trend analysis. Access 80+ years of data.",
     inputSchema: {
       type: "object",
       properties: {
@@ -222,7 +241,8 @@ Get current weather conditions for any location in Switzerland (or worldwide).
   },
   {
     name: "meteo__compare_locations",
-    description: "Compare weather conditions across multiple locations and rank by criteria.",
+    description:
+      "Compare weather conditions across multiple locations and rank by criteria.",
     inputSchema: {
       type: "object",
       properties: {
@@ -544,9 +564,12 @@ export async function handleToolCall(
             name: loc.name,
             latitude: loc.latitude,
             longitude: loc.longitude,
-            temperature: (currentWeather as Record<string, unknown>).temperature || 0,
-            wind_speed: (currentWeather as Record<string, unknown>).windspeed || 0,
-            weather_code: (currentWeather as Record<string, unknown>).weathercode ||
+            temperature:
+              (currentWeather as Record<string, unknown>).temperature || 0,
+            wind_speed: (currentWeather as Record<string, unknown>).windspeed ||
+              0,
+            weather_code:
+              (currentWeather as Record<string, unknown>).weathercode ||
               0,
             comfort_index: comfort.overall,
             aqi: (currentAqi as Record<string, unknown>).european_aqi || 0,
@@ -620,13 +643,15 @@ export function listResources(): ListResourcesResult {
       {
         uri: "weather://codes",
         name: "WMO Weather Codes Reference",
-        description: "WMO weather code reference with descriptions, categories, and travel impact",
+        description:
+          "WMO weather code reference with descriptions, categories, and travel impact",
         mimeType: "application/json",
       },
       {
         uri: "weather://parameters",
         name: "Weather Parameters Reference",
-        description: "Available weather and snow parameters from Open-Meteo API",
+        description:
+          "Available weather and snow parameters from Open-Meteo API",
         mimeType: "application/json",
       },
       {
@@ -682,7 +707,8 @@ export function listPrompts(): ListPromptsResult {
     prompts: [
       {
         name: "meteo__ski-trip-weather",
-        description: "Generates a guide for checking snow conditions and weather for ski trips",
+        description:
+          "Generates a guide for checking snow conditions and weather for ski trips",
         arguments: [
           {
             name: "resort",
@@ -698,7 +724,8 @@ export function listPrompts(): ListPromptsResult {
       },
       {
         name: "meteo__plan-outdoor-activity",
-        description: "Generates a weather-aware outdoor activity planning workflow",
+        description:
+          "Generates a weather-aware outdoor activity planning workflow",
         arguments: [
           {
             name: "activity",
@@ -719,7 +746,8 @@ export function listPrompts(): ListPromptsResult {
       },
       {
         name: "meteo__weather-aware-travel",
-        description: "Generates an integration pattern for combining weather forecasts with travel",
+        description:
+          "Generates an integration pattern for combining weather forecasts with travel",
         arguments: [
           {
             name: "destination",
@@ -758,7 +786,11 @@ export function getPrompt(request: GetPromptRequest) {
       return `You are helping plan a ski trip to Swiss Alps resorts. Follow this workflow:
 
 **Step 1: Identify the Resort**
-${resort ? `Resort mentioned: ${resort}` : "Determine the resort from the user's query"}
+${
+        resort
+          ? `Resort mentioned: ${resort}`
+          : "Determine the resort from the user's query"
+      }
 
 **Step 2: Check Snow Conditions**
 Use \`meteo__get_snow_conditions\` tool with resort coordinates

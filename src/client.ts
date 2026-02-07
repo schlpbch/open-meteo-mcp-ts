@@ -220,7 +220,8 @@ export class OpenMeteoClient {
     });
 
     try {
-      const airQualityUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${params}`;
+      const airQualityUrl =
+        `https://air-quality-api.open-meteo.com/v1/air-quality?${params}`;
       const response = await this.fetchWithTimeout(airQualityUrl);
 
       if (!response.ok) {
@@ -272,7 +273,8 @@ export class OpenMeteoClient {
     }
 
     try {
-      const geocodingUrl = `https://geocoding-api.open-meteo.com/v1/search?${params}`;
+      const geocodingUrl =
+        `https://geocoding-api.open-meteo.com/v1/search?${params}`;
       const response = await this.fetchWithTimeout(geocodingUrl);
 
       if (!response.ok) {

@@ -1,6 +1,7 @@
 # Open-Meteo MCP TypeScript - Architecture Decision Records (ADR) Compendium
 
-**Document Version**: 1.3.0 **Last Updated**: 2026-02-04 **Total ADRs**: 12 (All Accepted)
+**Document Version**: 1.3.0 **Last Updated**: 2026-02-04 **Total ADRs**: 12 (All
+Accepted)
 
 **Related Documents**:
 
@@ -23,40 +24,52 @@
 
 ### Core Architecture & Runtime
 
-- [ADR-001: Use Node.js as the Runtime Environment](#adr-001-use-nodejs-as-the-runtime-environment) ✅
-- [ADR-002: Use Zod for Runtime Schema Validation](#adr-002-use-zod-for-runtime-schema-validation) ✅
+- [ADR-001: Use Node.js as the Runtime Environment](#adr-001-use-nodejs-as-the-runtime-environment)
+  ✅
+- [ADR-002: Use Zod for Runtime Schema Validation](#adr-002-use-zod-for-runtime-schema-validation)
+  ✅
 - [ADR-003: Async/Await with Fetch API](#adr-003-asyncawait-with-fetch-api) ✅
 
 ### Protocol & Communication
 
 - [ADR-004: Stdio-Based MCP Transport](#adr-004-stdio-based-mcp-transport) ✅
-- [ADR-005: Reserve stdout for Protocol, Use stderr for Logging](#adr-005-reserve-stdout-for-protocol-use-stderr-for-logging) ✅
-- [ADR-006: MCP Tool Naming Convention with meteo__ Prefix](#adr-006-mcp-tool-naming-convention-with-meteo__-prefix) ✅
+- [ADR-005: Reserve stdout for Protocol, Use stderr for Logging](#adr-005-reserve-stdout-for-protocol-use-stderr-for-logging)
+  ✅
+- [ADR-006: MCP Tool Naming Convention with meteo__ Prefix](#adr-006-mcp-tool-naming-convention-with-meteo__-prefix)
+  ✅
 
 ### Type Safety & Quality
 
-- [ADR-007: Strict TypeScript Compiler Configuration](#adr-007-strict-typescript-compiler-configuration) ✅
-- [ADR-008: MCP Tools/Resources/Prompts Composition Pattern](#adr-008-mcp-toolsresourcesprompts-composition-pattern) ✅
-- [ADR-009: Test Coverage and Strategy (80%+ Target)](#adr-009-test-coverage-and-strategy-80-target) ✅
-- [ADR-010: HTTP Client with Gzip Compression](#adr-010-http-client-with-gzip-compression) ✅
+- [ADR-007: Strict TypeScript Compiler Configuration](#adr-007-strict-typescript-compiler-configuration)
+  ✅
+- [ADR-008: MCP Tools/Resources/Prompts Composition Pattern](#adr-008-mcp-toolsresourcesprompts-composition-pattern)
+  ✅
+- [ADR-009: Test Coverage and Strategy (80%+ Target)](#adr-009-test-coverage-and-strategy-80-target)
+  ✅
+- [ADR-010: HTTP Client with Gzip Compression](#adr-010-http-client-with-gzip-compression)
+  ✅
 
 ### Framework & HTTP
 
-- [ADR-011: Adopt Hono as Lightweight Web Framework](#adr-011-adopt-hono-as-lightweight-web-framework) ✅
+- [ADR-011: Adopt Hono as Lightweight Web Framework](#adr-011-adopt-hono-as-lightweight-web-framework)
+  ✅
 
 ### Dependency Management
 
-- [ADR-012: Use pnpm as Package Manager](#adr-012-use-pnpm-as-package-manager) ✅
+- [ADR-012: Use pnpm as Package Manager](#adr-012-use-pnpm-as-package-manager)
+  ✅
 
 ---
 
 ## ADR-001: Use Node.js as the Runtime Environment
 
-**Status**: ✅ Accepted **Date**: 2026-02-04 **Deciders**: Architecture Team **Category**: Core Architecture
+**Status**: ✅ Accepted **Date**: 2026-02-04 **Deciders**: Architecture Team
+**Category**: Core Architecture
 
 ### Decision
 
-Use **Node.js 20 LTS+** as the runtime environment for the TypeScript MCP server instead of Deno.
+Use **Node.js 20 LTS+** as the runtime environment for the TypeScript MCP server
+instead of Deno.
 
 ### Rationale
 
@@ -101,14 +114,14 @@ Use **Node.js 20 LTS+** as the runtime environment for the TypeScript MCP server
 
 ### Comparison
 
-|Aspect|Node.js|Deno|
-|---|---|---|
-|Ecosystem|Massive (npm)|Limited (jspm/npm)|
-|Learning Curve|Low (widely known)|High (new runtime)|
-|Enterprise|Production-proven|Emerging|
-|Tooling|Mature|Modern but limited|
-|Community|Largest|Growing|
-|Deployment|Multiple|Limited|
+| Aspect         | Node.js            | Deno               |
+| -------------- | ------------------ | ------------------ |
+| Ecosystem      | Massive (npm)      | Limited (jspm/npm) |
+| Learning Curve | Low (widely known) | High (new runtime) |
+| Enterprise     | Production-proven  | Emerging           |
+| Tooling        | Mature             | Modern but limited |
+| Community      | Largest            | Growing            |
+| Deployment     | Multiple           | Limited            |
 
 ### Recommended Setup
 
@@ -138,27 +151,30 @@ Use **Node.js 20 LTS+** as the runtime environment for the TypeScript MCP server
 
 ### Migration Status
 
-⛔ **Currently on Deno** - Migration to Node.js planned (see [MIGRATION_NODEJS.md](./MIGRATION_NODEJS.md))
+⛔ **Currently on Deno** - Migration to Node.js planned (see
+[MIGRATION_NODEJS.md](./MIGRATION_NODEJS.md))
 
-Migration started: 2026-02-04
-Target completion: 2026-02-11
+Migration started: 2026-02-04 Target completion: 2026-02-11
 
 ---
 
 ## ADR-002: Use Zod for Runtime Schema Validation
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Type Safety
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Type Safety
 
 ### Decision
 
-Use **Zod** for runtime validation of API responses and tool arguments instead of runtime validation libraries or manual type guards.
+Use **Zod** for runtime validation of API responses and tool arguments instead
+of runtime validation libraries or manual type guards.
 
 ### Rationale
 
 **Why Zod:**
 
 1. **Type Inference**
-   - Single source of truth: schema → TypeScript type via `z.infer<typeof Schema>`
+   - Single source of truth: schema → TypeScript type via
+     `z.infer<typeof Schema>`
    - No duplication between validation logic and types
    - Automatic type narrowing in handlers
 
@@ -213,11 +229,13 @@ if (result.success) {
 
 ## ADR-003: Async/Await with Fetch API
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Core Architecture
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Core Architecture
 
 ### Decision
 
-Use native **async/await** with the **Fetch API** (no external HTTP library) for API calls to Open-Meteo.
+Use native **async/await** with the **Fetch API** (no external HTTP library) for
+API calls to Open-Meteo.
 
 ### Rationale
 
@@ -239,7 +257,10 @@ Use native **async/await** with the **Fetch API** (no external HTTP library) for
 ### Pattern
 
 ```typescript
-async function getWeather(latitude: number, longitude: number): Promise<WeatherResponse> {
+async function getWeather(
+  latitude: number,
+  longitude: number,
+): Promise<WeatherResponse> {
   const url = new URL("https://api.open-meteo.com/v1/forecast");
   url.searchParams.set("latitude", latitude.toString());
   url.searchParams.set("longitude", longitude.toString());
@@ -267,11 +288,13 @@ async function getWeather(latitude: number, longitude: number): Promise<WeatherR
 
 ## ADR-004: Stdio-Based MCP Transport
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Protocol
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Protocol
 
 ### Decision
 
-Use **stdio-based transport** for the Model Context Protocol (MCP) to communicate with Claude and other AI assistants.
+Use **stdio-based transport** for the Model Context Protocol (MCP) to
+communicate with Claude and other AI assistants.
 
 ### Rationale
 
@@ -316,11 +339,13 @@ await server.connect(transport);
 
 ## ADR-005: Reserve stdout for Protocol, Use stderr for Logging
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Protocol
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Protocol
 
 ### Decision
 
-**Reserve stdout for MCP protocol messages only.** Use **stderr exclusively for logging, diagnostics, and debug output.**
+**Reserve stdout for MCP protocol messages only.** Use **stderr exclusively for
+logging, diagnostics, and debug output.**
 
 ### Rationale
 
@@ -374,11 +399,13 @@ Response → MCP Protocol via stdout
 
 ## ADR-006: MCP Tool Naming Convention with meteo__ Prefix
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Protocol
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Protocol
 
 ### Decision
 
-All MCP tool names follow the pattern: **`meteo__<action>_<noun>`** with lowercase snake_case.
+All MCP tool names follow the pattern: **`meteo__<action>_<noun>`** with
+lowercase snake_case.
 
 ### Rationale
 
@@ -399,19 +426,19 @@ All MCP tool names follow the pattern: **`meteo__<action>_<noun>`** with lowerca
 
 ### Tool Naming Examples
 
-| Tool Name | Purpose |
-|-----------|---------|
-| `meteo__search_location` | Find location by name |
-| `meteo__get_weather` | Get weather forecast |
-| `meteo__get_air_quality` | Get air quality index |
-| `meteo__get_snow_conditions` | Get snow depth and forecast |
-| `meteo__get_marine_conditions` | Get wave/ocean data |
-| `meteo__compare_locations` | Compare weather across locations |
-| `meteo__get_comfort_index` | Outdoor comfort rating |
-| `meteo__get_astronomy` | Sunrise/sunset/moon phase |
-| `meteo__search_location_swiss` | Swiss location search |
-| `meteo__get_historical_weather` | Historical weather data |
-| `meteo__get_weather_alerts` | Weather alert thresholds |
+| Tool Name                       | Purpose                          |
+| ------------------------------- | -------------------------------- |
+| `meteo__search_location`        | Find location by name            |
+| `meteo__get_weather`            | Get weather forecast             |
+| `meteo__get_air_quality`        | Get air quality index            |
+| `meteo__get_snow_conditions`    | Get snow depth and forecast      |
+| `meteo__get_marine_conditions`  | Get wave/ocean data              |
+| `meteo__compare_locations`      | Compare weather across locations |
+| `meteo__get_comfort_index`      | Outdoor comfort rating           |
+| `meteo__get_astronomy`          | Sunrise/sunset/moon phase        |
+| `meteo__search_location_swiss`  | Swiss location search            |
+| `meteo__get_historical_weather` | Historical weather data          |
+| `meteo__get_weather_alerts`     | Weather alert thresholds         |
 
 ### Implementation
 
@@ -436,11 +463,13 @@ export const tools = [
 
 ## ADR-007: Strict TypeScript Compiler Configuration
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Type Safety
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Type Safety
 
 ### Decision
 
-Use **strict TypeScript compiler configuration** with all strict flags enabled to maximize type safety and catch errors at compile time.
+Use **strict TypeScript compiler configuration** with all strict flags enabled
+to maximize type safety and catch errors at compile time.
 
 ### Rationale
 
@@ -505,7 +534,8 @@ if (temp !== null) {
 
 ## ADR-008: MCP Tools/Resources/Prompts Composition Pattern
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Protocol
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Protocol
 
 ### Decision
 
@@ -589,11 +619,13 @@ export async function listPrompts(): Promise<Prompt[]> {
 
 ## ADR-009: Test Coverage and Strategy (80%+ Target)
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Quality
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Quality
 
 ### Decision
 
-Maintain **80%+ code coverage** with focus on critical paths and edge cases. Use Deno's built-in testing framework.
+Maintain **80%+ code coverage** with focus on critical paths and edge cases. Use
+Deno's built-in testing framework.
 
 ### Rationale
 
@@ -614,14 +646,14 @@ Maintain **80%+ code coverage** with focus on critical paths and edge cases. Use
 
 ### Test Organization
 
-| File | Coverage | Purpose |
-|------|----------|---------|
-| `helpers_test.ts` | 100% | Utility functions |
-| `client_test.ts` | 90%+ | API client (mocked) |
-| `models_test.ts` | 85%+ | Schema validation |
-| `server_test.ts` | 85%+ | MCP handlers |
-| `air_quality_test.ts` | Edge cases | AQI logic |
-| `geocoding_test.ts` | Edge cases | Location search |
+| File                  | Coverage   | Purpose             |
+| --------------------- | ---------- | ------------------- |
+| `helpers_test.ts`     | 100%       | Utility functions   |
+| `client_test.ts`      | 90%+       | API client (mocked) |
+| `models_test.ts`      | 85%+       | Schema validation   |
+| `server_test.ts`      | 85%+       | MCP handlers        |
+| `air_quality_test.ts` | Edge cases | AQI logic           |
+| `geocoding_test.ts`   | Edge cases | Location search     |
 
 ### Pattern
 
@@ -633,7 +665,7 @@ Deno.test("formatTemperature() with valid input", () => {
 Deno.test("getWeather() handles API errors", async () => {
   const mockFetch = (url: string) => {
     return Promise.resolve(
-      new Response("Not Found", { status: 404 })
+      new Response("Not Found", { status: 404 }),
     );
   };
 
@@ -641,7 +673,7 @@ Deno.test("getWeather() handles API errors", async () => {
   await assertRejects(
     () => client.getWeather(47.3, 8.5),
     Error,
-    "API error"
+    "API error",
   );
 });
 ```
@@ -669,11 +701,13 @@ deno task coverage
 
 ## ADR-010: HTTP Client with Gzip Compression
 
-**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team **Category**: Performance
+**Status**: ✅ Accepted **Date**: 2026-01-15 **Deciders**: Architecture Team
+**Category**: Performance
 
 ### Decision
 
-All HTTP requests to Open-Meteo API include **gzip compression** via `Accept-Encoding: gzip` header and handle decompression automatically.
+All HTTP requests to Open-Meteo API include **gzip compression** via
+`Accept-Encoding: gzip` header and handle decompression automatically.
 
 ### Rationale
 
@@ -707,11 +741,11 @@ const data = await response.json(); // Works on decompressed data
 
 ### Performance Impact
 
-| Scenario | Without Gzip | With Gzip | Benefit |
-|----------|-------------|-----------|---------|
-| Small forecast (10 days) | ~4 KB | ~1.5 KB | 62% reduction |
-| Full forecast (16 days) | ~8 KB | ~2.8 KB | 65% reduction |
-| Air quality data | ~12 KB | ~3.5 KB | 71% reduction |
+| Scenario                 | Without Gzip | With Gzip | Benefit       |
+| ------------------------ | ------------ | --------- | ------------- |
+| Small forecast (10 days) | ~4 KB        | ~1.5 KB   | 62% reduction |
+| Full forecast (16 days)  | ~8 KB        | ~2.8 KB   | 65% reduction |
+| Air quality data         | ~12 KB       | ~3.5 KB   | 71% reduction |
 
 ### Consequences
 
@@ -723,11 +757,15 @@ const data = await response.json(); // Works on decompressed data
 
 ## ADR-011: Adopt Hono as Lightweight Web Framework
 
-**Status**: ✅ Accepted **Date**: 2026-02-04 **Deciders**: Architecture Team **Category**: Framework & HTTP
+**Status**: ✅ Accepted **Date**: 2026-02-04 **Deciders**: Architecture Team
+**Category**: Framework & HTTP
 
 ### Context
 
-With the migration to Node.js, the question arises: should we adopt a lightweight web framework like **Hono** for potential future HTTP endpoints and middleware support? Currently, the server uses **stdio-based MCP transport only**, but future requirements might include:
+With the migration to Node.js, the question arises: should we adopt a
+lightweight web framework like **Hono** for potential future HTTP endpoints and
+middleware support? Currently, the server uses **stdio-based MCP transport
+only**, but future requirements might include:
 
 - REST API endpoints alongside MCP
 - Health checks and metrics endpoints
@@ -737,29 +775,35 @@ With the migration to Node.js, the question arises: should we adopt a lightweigh
 ### Decision Options
 
 #### Option A: Keep Current Approach (No Framework)
+
 **Use raw Node.js stdio + optional future HTTP if needed**
 
 Stick with:
+
 - MCP via stdio transport
 - Fetch API for HTTP calls
 - No web framework dependency
 - Manual middleware if HTTP endpoints needed
 
 **Pros**:
+
 - Minimal dependencies
 - Full control over code
 - Lightweight footprint
 - Clear, simple architecture
 
 **Cons**:
+
 - Manual routing for future HTTP endpoints
 - No middleware ecosystem
 - Code duplication if HTTP features added
 
 #### Option B: Adopt Hono Framework (Recommended for Future)
+
 **Use Hono for lightweight, edge-ready HTTP support**
 
 Hono characteristics:
+
 - **Ultralight**: ~13KB (smaller than Express)
 - **Multi-runtime**: Works on Node.js, Deno, Cloudflare Workers, etc.
 - **TypeScript-first**: Excellent type safety
@@ -767,6 +811,7 @@ Hono characteristics:
 - **Edge-ready**: Designed for edge computing
 
 **Pros**:
+
 - Prepared for future HTTP endpoints
 - Powerful middleware system
 - Built-in request validation
@@ -774,19 +819,23 @@ Hono characteristics:
 - Cookie/session support if needed
 
 **Cons**:
+
 - Additional dependency (though small)
 - Learning curve (minimal, Express-like)
 - More abstraction than needed for MCP-only
 
 #### Option C: Use Express.js (Not Recommended)
+
 **Use industry-standard Express framework**
 
 **Pros**:
+
 - Most widely used
 - Massive ecosystem
 - Excellent documentation
 
 **Cons**:
+
 - Heavier (~70KB vs Hono's 13KB)
 - Overkill for stdio-based MCP
 - More dependencies
@@ -796,7 +845,8 @@ Hono characteristics:
 
 **✅ Accepted Decision: Adopt Hono Framework**
 
-Hono is selected as the standard web framework for the Node.js migration. Implementation strategy:
+Hono is selected as the standard web framework for the Node.js migration.
+Implementation strategy:
 
 1. **Phase 1 (Immediate - v4.1.0)**: Migrate to Node.js with Hono foundation
    - Set up Hono as base framework
@@ -882,30 +932,33 @@ runMcpServer();
 ### Consequences
 
 **If Adopted:**
+
 - Adds 13KB dependency (minimal impact)
 - Enables rapid HTTP endpoint development
 - Better type safety for request/response handling
 - More professional error handling
 
 **If Deferred:**
+
 - Keeps architecture simpler for now
 - Avoids premature optimization
 - Can revisit with real requirements
 
 ### Comparison Matrix
 
-| Feature | Hono | Express | Raw Node.js |
-| --- | --- | --- | --- |
-| Size | 13KB | 70KB | 0KB |
-| TypeScript | Native | Partial | Manual |
-| Middleware | Built-in | Built-in | Manual |
-| Learning Curve | Low | Low | None |
-| Best For | Edge/HTTP | General | MCP-only |
-| Setup Time | 5 min | 10 min | 0 min |
+| Feature        | Hono      | Express  | Raw Node.js |
+| -------------- | --------- | -------- | ----------- |
+| Size           | 13KB      | 70KB     | 0KB         |
+| TypeScript     | Native    | Partial  | Manual      |
+| Middleware     | Built-in  | Built-in | Manual      |
+| Learning Curve | Low       | Low      | None        |
+| Best For       | Edge/HTTP | General  | MCP-only    |
+| Setup Time     | 5 min     | 10 min   | 0 min       |
 
 ### Future Decision Points
 
 **ADR-012** should address:
+
 - Business requirements for HTTP endpoints
 - REST API design (if needed)
 - Deployment strategy (edge vs traditional)
@@ -922,11 +975,13 @@ runMcpServer();
 
 ## ADR-012: Use pnpm as Package Manager
 
-**Status**: ✅ Accepted **Date**: 2026-02-04 **Deciders**: Architecture Team **Category**: Dependency Management
+**Status**: ✅ Accepted **Date**: 2026-02-04 **Deciders**: Architecture Team
+**Category**: Dependency Management
 
 ### Decision
 
-Use **pnpm** as the primary package manager for Node.js project instead of npm or yarn.
+Use **pnpm** as the primary package manager for Node.js project instead of npm
+or yarn.
 
 ### Rationale
 
@@ -964,16 +1019,16 @@ Use **pnpm** as the primary package manager for Node.js project instead of npm o
 
 ### Comparison Matrix
 
-| Feature | pnpm | npm | yarn |
-| --- | --- | --- | --- |
-| Speed | Fastest | Slower | Fast |
-| Disk Usage | 50-70% smaller | Baseline | Similar |
-| Lock File | YAML | JSON | Yarn.lock |
-| Strictness | Highest | Loose | Medium |
-| Monorepo | Native | Manual | Built-in |
-| Installation | Parallel | Sequential | Parallel |
-| npm Compatible | Yes | Native | Yes |
-| Learning Curve | Low | None | Low |
+| Feature        | pnpm           | npm        | yarn      |
+| -------------- | -------------- | ---------- | --------- |
+| Speed          | Fastest        | Slower     | Fast      |
+| Disk Usage     | 50-70% smaller | Baseline   | Similar   |
+| Lock File      | YAML           | JSON       | Yarn.lock |
+| Strictness     | Highest        | Loose      | Medium    |
+| Monorepo       | Native         | Manual     | Built-in  |
+| Installation   | Parallel       | Sequential | Parallel  |
+| npm Compatible | Yes            | Native     | Yes       |
+| Learning Curve | Low            | None       | Low       |
 
 ### Installation & Setup
 
@@ -1065,8 +1120,8 @@ jobs:
           version: 8
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - run: pnpm install
       - run: pnpm lint
@@ -1077,16 +1132,16 @@ jobs:
 
 ### Common pnpm Commands
 
-| Task | Command |
-| --- | --- |
-| Install dependencies | `pnpm install` |
-| Add package | `pnpm add package-name` |
-| Remove package | `pnpm remove package-name` |
-| Update packages | `pnpm update` |
-| Install (CI) | `pnpm install --frozen-lockfile` |
-| Clean cache | `pnpm store prune` |
-| Run script | `pnpm run script-name` |
-| Execute npx-like | `pnpm exec command` |
+| Task                 | Command                          |
+| -------------------- | -------------------------------- |
+| Install dependencies | `pnpm install`                   |
+| Add package          | `pnpm add package-name`          |
+| Remove package       | `pnpm remove package-name`       |
+| Update packages      | `pnpm update`                    |
+| Install (CI)         | `pnpm install --frozen-lockfile` |
+| Clean cache          | `pnpm store prune`               |
+| Run script           | `pnpm run script-name`           |
+| Execute npx-like     | `pnpm exec command`              |
 
 ### Migration Path
 
@@ -1113,6 +1168,7 @@ git commit -m "chore: migrate to pnpm"
 ### Consequences
 
 **Benefits:**
+
 - Smaller disk footprint (saves ~200MB+ per project)
 - Faster CI/CD pipelines (20-40% improvement typical)
 - Better dependency isolation
@@ -1120,6 +1176,7 @@ git commit -m "chore: migrate to pnpm"
 - Industry-standard for modern projects
 
 **Tradeoffs:**
+
 - Team must learn pnpm (minimal learning curve)
 - Some old packages may have issues (rare)
 - Requires explicit dependency declaration (enforces good practices)
@@ -1169,17 +1226,20 @@ This enables future expansion with shared packages and applications.
 ### Lock File Best Practices
 
 **Commit to Git:**
+
 ```bash
 git add pnpm-lock.yaml
 git commit -m "docs: lock dependencies with pnpm"
 ```
 
 **Never manually edit:**
+
 - Always use `pnpm add/remove`
 - Let pnpm manage the lock file
 - Review lock file diffs in PRs
 
 **CI/CD Usage:**
+
 ```bash
 pnpm install --frozen-lockfile  # Fails if lock is outdated
 ```
@@ -1223,17 +1283,17 @@ pnpm install --frozen-lockfile  # Fails if lock is outdated
 
 This TypeScript project mirrors architectural decisions from the Java version:
 
-| Java ADR | TypeScript Equivalent |
-|----------|----------------------|
-| ADR-001: CompletableFuture | ADR-003: Async/Await |
-| ADR-002: Java Records | ADR-002: Zod Schemas |
-| ADR-005: Specification-Driven Development | Implicit in all ADRs |
-| ADR-006: Semantic Versioning | Same principle applies |
-| ADR-007: Tool Naming (meteo__) | ADR-006: Tool naming |
-| ADR-008: Structured Logging | ADR-005: stderr logging |
-| ADR-010: 80%+ Test Coverage | ADR-009: Test strategy |
-| ADR-011: MCP Protocol | ADR-004: Stdio transport |
-| ADR-012: Resources/Prompts | ADR-008: Composition pattern |
+| Java ADR                                  | TypeScript Equivalent        |
+| ----------------------------------------- | ---------------------------- |
+| ADR-001: CompletableFuture                | ADR-003: Async/Await         |
+| ADR-002: Java Records                     | ADR-002: Zod Schemas         |
+| ADR-005: Specification-Driven Development | Implicit in all ADRs         |
+| ADR-006: Semantic Versioning              | Same principle applies       |
+| ADR-007: Tool Naming (meteo__)            | ADR-006: Tool naming         |
+| ADR-008: Structured Logging               | ADR-005: stderr logging      |
+| ADR-010: 80%+ Test Coverage               | ADR-009: Test strategy       |
+| ADR-011: MCP Protocol                     | ADR-004: Stdio transport     |
+| ADR-012: Resources/Prompts                | ADR-008: Composition pattern |
 
 ---
 
@@ -1247,4 +1307,5 @@ This TypeScript project mirrors architectural decisions from the Java version:
 
 ---
 
-**Document Status**: Complete and Ready for Use **Test Coverage**: All ADRs implemented and tested **Last Review**: 2026-02-04
+**Document Status**: Complete and Ready for Use **Test Coverage**: All ADRs
+implemented and tested **Last Review**: 2026-02-04

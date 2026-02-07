@@ -6,7 +6,13 @@
 
 import { test } from "node:test";
 import { strict as assert } from "assert";
-import { getPrompt, listPrompts, listResources, listTools, readResource } from "../src/server.js";
+import {
+  getPrompt,
+  listPrompts,
+  listResources,
+  listTools,
+  readResource,
+} from "../src/server.js";
 
 // ============================================================================
 // Server Tools Tests

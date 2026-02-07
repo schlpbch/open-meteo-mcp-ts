@@ -30,7 +30,9 @@ function createMockFetchError(status: number): typeof fetch {
     return Promise.resolve({
       ok: false,
       status,
-      statusText: status === 500 ? "Internal Server Error" : "Service Unavailable",
+      statusText: status === 500
+        ? "Internal Server Error"
+        : "Service Unavailable",
       json: () => Promise.resolve({}),
     }) as Promise<Response>;
   };

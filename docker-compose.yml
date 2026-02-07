@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   open-meteo-mcp:
@@ -9,8 +9,8 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      # MCP runs on stdio, so expose any future REST API ports here
-      # - "8888:8888"
+    # MCP runs on stdio, so expose any future REST API ports here
+    # - "8888:8888"
     restart: unless-stopped
     networks:
       - default
@@ -18,10 +18,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 512M
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
     # Logging configuration
     logging:

@@ -223,7 +223,9 @@ test("Timezone Consistency: same timezone across endpoints", async () => {
   // Mock fetch to return different responses based on URL
   globalThis.fetch = (input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input.toString();
-    const responseData = url.includes("air-quality") ? airQualityResponse : weatherResponse;
+    const responseData = url.includes("air-quality")
+      ? airQualityResponse
+      : weatherResponse;
 
     return Promise.resolve({
       ok: true,
@@ -298,7 +300,11 @@ test("Weather Alerts: cold alert generation", () => {
 
   if (temp < -5) {
     const apparentTemp = temp - windSpeed * 0.6;
-    const severity = apparentTemp < -15 ? "warning" : apparentTemp < -10 ? "watch" : "advisory";
+    const severity = apparentTemp < -15
+      ? "warning"
+      : apparentTemp < -10
+      ? "watch"
+      : "advisory";
     alerts.push({
       type: "cold",
       severity: severity,
@@ -394,7 +400,9 @@ test("Weather Alerts: precipitation alert generation", () => {
       alerts.push({
         type: "precipitation",
         severity: severity,
-        description: `Heavy precipitation alert: ${precip.toFixed(1)}mm/hour expected`,
+        description: `Heavy precipitation alert: ${
+          precip.toFixed(1)
+        }mm/hour expected`,
       });
       break; // Only show first heavy precipitation event
     }
@@ -485,7 +493,9 @@ test("Integration: end-to-end weather workflow", async () => {
   // Mock fetch to return different responses based on URL
   globalThis.fetch = (input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input.toString();
-    const responseData = url.includes("geocoding") ? locationResponse : weatherResponse;
+    const responseData = url.includes("geocoding")
+      ? locationResponse
+      : weatherResponse;
 
     return Promise.resolve({
       ok: true,

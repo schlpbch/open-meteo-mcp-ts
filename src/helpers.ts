@@ -301,7 +301,8 @@ export function generateWeatherAlerts(
           start: hourlyTimes[0] || now.toISOString(),
           end: hourlyTimes[Math.min(24, heatHours)] ||
             addHours(now, 6).toISOString(),
-          description: `High temperature alert: ${heatHours} hours above 30°C expected`,
+          description:
+            `High temperature alert: ${heatHours} hours above 30°C expected`,
           recommendations: [
             "Limit outdoor activities during peak heat (11am-4pm)",
             "Increase hydration significantly",
@@ -337,7 +338,9 @@ export function generateWeatherAlerts(
     const highWindHours = hourlyWinds
       .map((w, i) => (w && w > 80 ? i : -1))
       .filter((i) => i !== -1);
-    const thunderstormCodes = dailyCodes.filter((code) => [95, 96, 99].includes(code));
+    const thunderstormCodes = dailyCodes.filter((code) =>
+      [95, 96, 99].includes(code)
+    );
 
     if (highWindHours.length > 0 || thunderstormCodes.length > 0) {
       alerts.push({
@@ -353,7 +356,8 @@ export function generateWeatherAlerts(
             )
           ]) ||
           addHours(now, 4).toISOString(),
-        description: "Storm warning: strong winds (>80 km/h) or thunderstorms expected",
+        description:
+          "Storm warning: strong winds (>80 km/h) or thunderstorms expected",
         recommendations: [
           "Avoid outdoor activities in exposed areas",
           "Secure loose outdoor items",
@@ -559,8 +563,14 @@ export function calculateAstronomyData(
     const sunsetUtc = 12 + h / 15 - utcOffset;
 
     // Create datetime objects
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const sunrise = new Date(startOfDay.getTime() + sunriseUtc * 60 * 60 * 1000);
+    const startOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+    );
+    const sunrise = new Date(
+      startOfDay.getTime() + sunriseUtc * 60 * 60 * 1000,
+    );
     const sunset = new Date(startOfDay.getTime() + sunsetUtc * 60 * 60 * 1000);
 
     // Convert to target timezone
@@ -576,7 +586,11 @@ export function calculateAstronomyData(
     const blueHourEnd = addMinutes(sunsetTz, 40);
 
     return {
-      sunrise: formatInTimeZone(sunriseTz, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+      sunrise: formatInTimeZone(
+        sunriseTz,
+        timezone,
+        "yyyy-MM-dd'T'HH:mm:ssXXX",
+      ),
       sunset: formatInTimeZone(sunsetTz, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
       day_length_hours: Math.round(
         (differenceInSeconds(sunset, sunrise) / 3600) * 10,
