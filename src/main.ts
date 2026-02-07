@@ -41,7 +41,7 @@ async function main() {
         resources: {},
         prompts: {},
       },
-    },
+    }
   );
 
   // Register request handlers

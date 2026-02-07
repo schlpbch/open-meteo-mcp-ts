@@ -196,12 +196,9 @@ test("Geocoding: HTTP error handling", async () => {
 
   const client = new OpenMeteoClient();
 
-  await assert.rejects(
-    async () => {
-      await client.searchLocation("Test");
-    },
-    Error,
-  );
+  await assert.rejects(async () => {
+    await client.searchLocation("Test");
+  }, Error);
 });
 
 test("Geocoding: invalid response gracefully handled", async () => {

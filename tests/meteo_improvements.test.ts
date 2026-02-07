@@ -5,8 +5,6 @@
  */
 import { test } from "node:test";
 import { strict as assert } from "assert";
-import { test } from "node:test";
-import { strict as assert } from "assert";
 import { OpenMeteoClient } from "../src/client.js";
 
 // Mock fetch helper
@@ -176,13 +174,7 @@ test("Timezone Consistency: air quality accepts timezone parameter", async () =>
   };
 
   const client = new OpenMeteoClient();
-  const result = await client.getAirQuality(
-    46.9479,
-    7.4474,
-    5,
-    true,
-    "Europe/Zurich",
-  );
+  const result = await client.getAirQuality(46.9479, 7.4474, 5, true, "Europe/Zurich");
 
   // Verify timezone parameter was passed in URL
   assert(fetchCalled);
@@ -223,9 +215,7 @@ test("Timezone Consistency: same timezone across endpoints", async () => {
   // Mock fetch to return different responses based on URL
   globalThis.fetch = (input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input.toString();
-    const responseData = url.includes("air-quality")
-      ? airQualityResponse
-      : weatherResponse;
+    const responseData = url.includes("air-quality") ? airQualityResponse : weatherResponse;
 
     return Promise.resolve({
       ok: true,
@@ -238,20 +228,8 @@ test("Timezone Consistency: same timezone across endpoints", async () => {
   const client = new OpenMeteoClient();
 
   // Get both weather and air quality
-  const weather = await client.getWeather(
-    46.9479,
-    7.4474,
-    7,
-    true,
-    "Europe/Zurich",
-  );
-  const airQuality = await client.getAirQuality(
-    46.9479,
-    7.4474,
-    5,
-    true,
-    "Europe/Zurich",
-  );
+  const weather = await client.getWeather(46.9479, 7.4474, 7, true, "Europe/Zurich");
+  const airQuality = await client.getAirQuality(46.9479, 7.4474, 5, true, "Europe/Zurich");
 
   // Both should use same timezone
   assert.equal(weather.timezone, "Europe/Zurich");
@@ -300,17 +278,13 @@ test("Weather Alerts: cold alert generation", () => {
 
   if (temp < -5) {
     const apparentTemp = temp - windSpeed * 0.6;
-    const severity = apparentTemp < -15
-      ? "warning"
-      : apparentTemp < -10
-      ? "watch"
-      : "advisory";
+    const severity = apparentTemp < -15 ? "warning" : apparentTemp < -10 ? "watch" : "advisory";
     alerts.push({
       type: "cold",
       severity: severity,
-      description: `Cold temperature alert: ${temp.toFixed(1)}°C (feels like ${
-        apparentTemp.toFixed(1)
-      }°C)`,
+      description: `Cold temperature alert: ${temp.toFixed(1)}°C (feels like ${apparentTemp.toFixed(
+        1
+      )}°C)`,
     });
   }
 
@@ -400,9 +374,7 @@ test("Weather Alerts: precipitation alert generation", () => {
       alerts.push({
         type: "precipitation",
         severity: severity,
-        description: `Heavy precipitation alert: ${
-          precip.toFixed(1)
-        }mm/hour expected`,
+        description: `Heavy precipitation alert: ${precip.toFixed(1)}mm/hour expected`,
       });
       break; // Only show first heavy precipitation event
     }
@@ -493,9 +465,7 @@ test("Integration: end-to-end weather workflow", async () => {
   // Mock fetch to return different responses based on URL
   globalThis.fetch = (input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input.toString();
-    const responseData = url.includes("geocoding")
-      ? locationResponse
-      : weatherResponse;
+    const responseData = url.includes("geocoding") ? locationResponse : weatherResponse;
 
     return Promise.resolve({
       ok: true,
@@ -520,7 +490,7 @@ test("Integration: end-to-end weather workflow", async () => {
     location.longitude,
     7,
     true,
-    "Europe/Zurich",
+    "Europe/Zurich"
   );
 
   // Step 3: Verify timezone consistency

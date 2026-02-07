@@ -55,7 +55,7 @@ export class OpenMeteoClient {
     longitude: number,
     forecastDays = 7,
     includeHourly = true,
-    timezone = "auto",
+    timezone = "auto"
   ): Promise<WeatherForecast> {
     // Clamp forecast_days to 1-16
     const clampedDays = Math.min(Math.max(forecastDays, 1), 16);
@@ -74,19 +74,15 @@ export class OpenMeteoClient {
     if (includeHourly) {
       params.set(
         "hourly",
-        "temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,cloud_cover,visibility,uv_index,is_day",
+        "temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code,wind_speed_10m,wind_gusts_10m,relative_humidity_2m,cloud_cover,visibility,uv_index,is_day"
       );
     }
 
     try {
-      const response = await this.fetchWithTimeout(
-        `${this.baseUrl}/forecast?${params}`,
-      );
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/forecast?${params}`);
 
       if (!response.ok) {
-        throw new Error(
-          `Weather API HTTP error: ${response.status} ${response.statusText}`,
-        );
+        throw new Error(`Weather API HTTP error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -116,7 +112,7 @@ export class OpenMeteoClient {
     longitude: number,
     forecastDays = 7,
     includeHourly = true,
-    timezone = "Europe/Zurich",
+    timezone = "Europe/Zurich"
   ): Promise<SnowConditions> {
     // Clamp forecast_days to 1-16
     const clampedDays = Math.min(Math.max(forecastDays, 1), 16);
@@ -134,19 +130,15 @@ export class OpenMeteoClient {
     if (includeHourly) {
       params.set(
         "hourly",
-        "snowfall,snow_depth,temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,cloud_cover,precipitation_probability",
+        "snowfall,snow_depth,temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_gusts_10m,cloud_cover,precipitation_probability"
       );
     }
 
     try {
-      const response = await this.fetchWithTimeout(
-        `${this.baseUrl}/forecast?${params}`,
-      );
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/forecast?${params}`);
 
       if (!response.ok) {
-        throw new Error(
-          `Snow API HTTP error: ${response.status} ${response.statusText}`,
-        );
+        throw new Error(`Snow API HTTP error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -176,7 +168,7 @@ export class OpenMeteoClient {
     longitude: number,
     forecastDays = 5,
     includePollen = true,
-    timezone = "auto",
+    timezone = "auto"
   ): Promise<AirQualityForecast> {
     // Build hourly parameters
     const hourlyParams = [
@@ -202,7 +194,7 @@ export class OpenMeteoClient {
         "grass_pollen",
         "mugwort_pollen",
         "olive_pollen",
-        "ragweed_pollen",
+        "ragweed_pollen"
       );
     }
 
@@ -220,14 +212,11 @@ export class OpenMeteoClient {
     });
 
     try {
-      const airQualityUrl =
-        `https://air-quality-api.open-meteo.com/v1/air-quality?${params}`;
+      const airQualityUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?${params}`;
       const response = await this.fetchWithTimeout(airQualityUrl);
 
       if (!response.ok) {
-        throw new Error(
-          `Air Quality API HTTP error: ${response.status} ${response.statusText}`,
-        );
+        throw new Error(`Air Quality API HTTP error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -255,7 +244,7 @@ export class OpenMeteoClient {
     name: string,
     count = 10,
     language = "en",
-    country?: string,
+    country?: string
   ): Promise<GeocodingResponse> {
     // Clamp count to 1-100
     const clampedCount = Math.min(Math.max(count, 1), 100);
@@ -273,14 +262,11 @@ export class OpenMeteoClient {
     }
 
     try {
-      const geocodingUrl =
-        `https://geocoding-api.open-meteo.com/v1/search?${params}`;
+      const geocodingUrl = `https://geocoding-api.open-meteo.com/v1/search?${params}`;
       const response = await this.fetchWithTimeout(geocodingUrl);
 
       if (!response.ok) {
-        throw new Error(
-          `Geocoding API HTTP error: ${response.status} ${response.statusText}`,
-        );
+        throw new Error(`Geocoding API HTTP error: ${response.status} ${response.statusText}`);
       }
 
       const data = (await response.json()) as {
@@ -294,7 +280,7 @@ export class OpenMeteoClient {
       if (country && results.length > 0) {
         const countryUpper = country.toUpperCase();
         const filteredResults = results.filter(
-          (r) => r?.country_code?.toUpperCase?.() === countryUpper,
+          (r) => r?.country_code?.toUpperCase?.() === countryUpper
         );
 
         // If we have matches after filtering, use them; otherwise return all
@@ -334,7 +320,7 @@ export class OpenMeteoClient {
     startDate: string,
     endDate: string,
     hourly = false,
-    timezone = "auto",
+    timezone = "auto"
   ): Promise<WeatherForecast> {
     // Build query parameters
     const params = new URLSearchParams({
@@ -350,18 +336,16 @@ export class OpenMeteoClient {
     if (hourly) {
       params.set(
         "hourly",
-        "temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,cloud_cover",
+        "temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,cloud_cover"
       );
     }
 
     try {
-      const response = await this.fetchWithTimeout(
-        `${this.baseUrl}/archive?${params}`,
-      );
+      const response = await this.fetchWithTimeout(`${this.baseUrl}/archive?${params}`);
 
       if (!response.ok) {
         throw new Error(
-          `Historical Weather API HTTP error: ${response.status} ${response.statusText}`,
+          `Historical Weather API HTTP error: ${response.status} ${response.statusText}`
         );
       }
 
@@ -392,7 +376,7 @@ export class OpenMeteoClient {
     longitude: number,
     forecastDays = 7,
     includeHourly = true,
-    timezone = "auto",
+    timezone = "auto"
   ): Promise<MarineConditions> {
     // Clamp forecast_days to 1-16
     const clampedDays = Math.min(Math.max(forecastDays, 1), 16);
@@ -410,7 +394,7 @@ export class OpenMeteoClient {
     if (includeHourly) {
       params.set(
         "hourly",
-        "wave_height,wave_direction,wave_period,wind_wave_height,wind_wave_direction,wind_wave_period,swell_wave_height,swell_wave_direction,swell_wave_period",
+        "wave_height,wave_direction,wave_period,wind_wave_height,wind_wave_direction,wind_wave_period,swell_wave_height,swell_wave_direction,swell_wave_period"
       );
     }
 
@@ -419,9 +403,7 @@ export class OpenMeteoClient {
       const response = await this.fetchWithTimeout(marineUrl);
 
       if (!response.ok) {
-        throw new Error(
-          `Marine API HTTP error: ${response.status} ${response.statusText}`,
-        );
+        throw new Error(`Marine API HTTP error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();

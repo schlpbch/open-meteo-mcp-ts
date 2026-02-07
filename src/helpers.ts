@@ -137,11 +137,13 @@ const WEATHER_CODES: Record<number, WeatherCodeInterpretation> = {
  * Interpret WMO weather codes into human-readable descriptions.
  */
 export function interpretWeatherCode(code: number): WeatherCodeInterpretation {
-  return WEATHER_CODES[code] || {
-    description: `Unknown weather code: ${code}`,
-    category: "Unknown",
-    severity: "unknown",
-  };
+  return (
+    WEATHER_CODES[code] || {
+      description: `Unknown weather code: ${code}`,
+      category: "Unknown",
+      severity: "unknown",
+    }
+  );
 }
 
 /**
@@ -173,7 +175,7 @@ export function getTravelImpact(code: number): string {
  */
 export function assessSkiConditions(
   snowData: Record<string, unknown>,
-  weatherData: Record<string, unknown>,
+  weatherData: Record<string, unknown>
 ): string {
   const snowDepth = (snowData.snow_depth as number) || 0;
   const recentSnowfall = (snowData.recent_snowfall as number) || 0;
@@ -221,7 +223,8 @@ export function calculateWindChill(temp: number, wind: number): number {
   const windMph = wind * 0.621371;
 
   // Wind chill formula (Fahrenheit)
-  const windChillF = 35.74 +
+  const windChillF =
+    35.74 +
     0.6215 * tempF -
     35.75 * Math.pow(windMph, 0.16) +
     0.4275 * tempF * Math.pow(windMph, 0.16);
@@ -273,7 +276,7 @@ export function generateWeatherAlerts(
   current: Record<string, unknown>,
   hourly: Record<string, unknown>,
   daily: Record<string, unknown>,
-  _timezone: string,
+  _timezone: string
 ): WeatherAlert[] {
   const alerts: WeatherAlert[] = [];
 
@@ -299,10 +302,8 @@ export function generateWeatherAlerts(
           type: "heat",
           severity: heatHours < 6 ? "watch" : "warning",
           start: hourlyTimes[0] || now.toISOString(),
-          end: hourlyTimes[Math.min(24, heatHours)] ||
-            addHours(now, 6).toISOString(),
-          description:
-            `High temperature alert: ${heatHours} hours above 30°C expected`,
+          end: hourlyTimes[Math.min(24, heatHours)] || addHours(now, 6).toISOString(),
+          description: `High temperature alert: ${heatHours} hours above 30°C expected`,
           recommendations: [
             "Limit outdoor activities during peak heat (11am-4pm)",
             "Increase hydration significantly",
@@ -314,16 +315,12 @@ export function generateWeatherAlerts(
     }
 
     // COLD ALERT (temp < -10°C)
-    if (
-      currentTemp < -10 ||
-      hourlyTemps.slice(0, 24).some((t) => t < -10)
-    ) {
+    if (currentTemp < -10 || hourlyTemps.slice(0, 24).some((t) => t < -10)) {
       alerts.push({
         type: "cold",
         severity: currentTemp > -20 ? "watch" : "warning",
         start: hourlyTimes[0] || now.toISOString(),
-        end: hourlyTimes[Math.min(12, hourlyTimes.length - 1)] ||
-          addHours(now, 12).toISOString(),
+        end: hourlyTimes[Math.min(12, hourlyTimes.length - 1)] || addHours(now, 12).toISOString(),
         description: "Extreme cold alert: temperatures below -10°C expected",
         recommendations: [
           "Avoid prolonged outdoor exposure",
@@ -335,29 +332,21 @@ export function generateWeatherAlerts(
     }
 
     // STORM ALERT (wind gusts > 80 km/h OR thunderstorm codes 95-99)
-    const highWindHours = hourlyWinds
-      .map((w, i) => (w && w > 80 ? i : -1))
-      .filter((i) => i !== -1);
-    const thunderstormCodes = dailyCodes.filter((code) =>
-      [95, 96, 99].includes(code)
-    );
+    const highWindHours = hourlyWinds.map((w, i) => (w && w > 80 ? i : -1)).filter((i) => i !== -1);
+    const thunderstormCodes = dailyCodes.filter((code) => [95, 96, 99].includes(code));
 
     if (highWindHours.length > 0 || thunderstormCodes.length > 0) {
       alerts.push({
         type: "storm",
         severity: "warning",
-        start: (highWindHours.length > 0 && hourlyTimes[highWindHours[0]]) ||
-          now.toISOString(),
-        end: (highWindHours.length > 0 &&
-          hourlyTimes[
-            Math.min(
-              highWindHours[highWindHours.length - 1] + 2,
-              hourlyTimes.length - 1,
-            )
-          ]) ||
+        start: (highWindHours.length > 0 && hourlyTimes[highWindHours[0]]) || now.toISOString(),
+        end:
+          (highWindHours.length > 0 &&
+            hourlyTimes[
+              Math.min(highWindHours[highWindHours.length - 1] + 2, hourlyTimes.length - 1)
+            ]) ||
           addHours(now, 4).toISOString(),
-        description:
-          "Storm warning: strong winds (>80 km/h) or thunderstorms expected",
+        description: "Storm warning: strong winds (>80 km/h) or thunderstorms expected",
         recommendations: [
           "Avoid outdoor activities in exposed areas",
           "Secure loose outdoor items",
@@ -368,21 +357,16 @@ export function generateWeatherAlerts(
     }
 
     // UV ALERT (UV index > 8)
-    const highUvHours = hourlyUvs
-      .map((uv, i) => (uv && uv > 8 ? i : -1))
-      .filter((i) => i !== -1);
+    const highUvHours = hourlyUvs.map((uv, i) => (uv && uv > 8 ? i : -1)).filter((i) => i !== -1);
 
     if (highUvHours.length > 0) {
       alerts.push({
         type: "uv",
         severity: "advisory",
         start: hourlyTimes[highUvHours[0]] || now.toISOString(),
-        end: hourlyTimes[
-          Math.min(
-            highUvHours[highUvHours.length - 1] + 1,
-            hourlyTimes.length - 1,
-          )
-        ] || addHours(now, 3).toISOString(),
+        end:
+          hourlyTimes[Math.min(highUvHours[highUvHours.length - 1] + 1, hourlyTimes.length - 1)] ||
+          addHours(now, 3).toISOString(),
         description: "Extreme UV alert: UV index above 8 expected",
         recommendations: [
           "Apply high SPF sunscreen (SPF 50+) every 2 hours",
@@ -403,12 +387,10 @@ export function generateWeatherAlerts(
         type: "wind",
         severity: "advisory",
         start: hourlyTimes[moderateWindHours[0]] || now.toISOString(),
-        end: hourlyTimes[
-          Math.min(
-            moderateWindHours[moderateWindHours.length - 1] + 1,
-            hourlyTimes.length - 1,
-          )
-        ] || addHours(now, 2).toISOString(),
+        end:
+          hourlyTimes[
+            Math.min(moderateWindHours[moderateWindHours.length - 1] + 1, hourlyTimes.length - 1)
+          ] || addHours(now, 2).toISOString(),
         description: "High wind advisory: gusts 50-80 km/h expected",
         recommendations: [
           "Be cautious in exposed areas",
@@ -430,7 +412,7 @@ export function generateWeatherAlerts(
  */
 export function normalizeTimezone(
   responseData: Record<string, unknown>,
-  targetTimezone = "UTC",
+  targetTimezone = "UTC"
 ): Record<string, unknown> {
   try {
     const result = { ...responseData };
@@ -479,7 +461,7 @@ export function normalizeTimezone(
  */
 export function normalizeAirQualityTimezone(
   airQualityData: Record<string, unknown>,
-  weatherTimezone = "UTC",
+  weatherTimezone = "UTC"
 ): Record<string, unknown> {
   try {
     const result = { ...airQualityData };
@@ -491,11 +473,7 @@ export function normalizeAirQualityTimezone(
         hourly.time = hourly.time.map((timeStr: string) => {
           try {
             const dt = new Date(timeStr);
-            return formatInTimeZone(
-              dt,
-              weatherTimezone,
-              "yyyy-MM-dd'T'HH:mm",
-            );
+            return formatInTimeZone(dt, weatherTimezone, "yyyy-MM-dd'T'HH:mm");
           } catch {
             return timeStr;
           }
@@ -518,13 +496,12 @@ export function normalizeAirQualityTimezone(
 export function calculateAstronomyData(
   latitude: number,
   longitude: number,
-  timezone = "UTC",
+  timezone = "UTC"
 ): AstronomyData {
   try {
     const now = new Date();
     const dayOfYear = Math.floor(
-      (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24)
     );
 
     // Calculate solar parameters
@@ -535,22 +512,16 @@ export function calculateAstronomyData(
     const MRad = (M * Math.PI) / 180;
 
     // Equation of center
-    const C = 1.9164 * Math.sin(MRad) +
-      0.02 * Math.sin(2 * MRad) +
-      0.0029 * Math.sin(3 * MRad);
+    const C = 1.9164 * Math.sin(MRad) + 0.02 * Math.sin(2 * MRad) + 0.0029 * Math.sin(3 * MRad);
 
     // Ecliptic longitude
-    let lambdaSun = (280.4665 +
-      36000.76983 * (J / 36525) +
-      0.0003025 * Math.pow(J / 36525, 2)) %
-      360;
+    let lambdaSun =
+      (280.4665 + 36000.76983 * (J / 36525) + 0.0003025 * Math.pow(J / 36525, 2)) % 360;
     lambdaSun = (lambdaSun + C) % 360;
     const lambdaSunRad = (lambdaSun * Math.PI) / 180;
 
     // Solar declination
-    const delta = Math.asin(
-      Math.sin((23.4393 * Math.PI) / 180) * Math.sin(lambdaSunRad),
-    );
+    const delta = Math.asin(Math.sin((23.4393 * Math.PI) / 180) * Math.sin(lambdaSunRad));
 
     // Sunrise/sunset hour angle
     let cosH = -Math.tan(latRad) * Math.tan(delta);
@@ -563,14 +534,8 @@ export function calculateAstronomyData(
     const sunsetUtc = 12 + h / 15 - utcOffset;
 
     // Create datetime objects
-    const startOfDay = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    );
-    const sunrise = new Date(
-      startOfDay.getTime() + sunriseUtc * 60 * 60 * 1000,
-    );
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const sunrise = new Date(startOfDay.getTime() + sunriseUtc * 60 * 60 * 1000);
     const sunset = new Date(startOfDay.getTime() + sunsetUtc * 60 * 60 * 1000);
 
     // Convert to target timezone
@@ -586,68 +551,30 @@ export function calculateAstronomyData(
     const blueHourEnd = addMinutes(sunsetTz, 40);
 
     return {
-      sunrise: formatInTimeZone(
-        sunriseTz,
-        timezone,
-        "yyyy-MM-dd'T'HH:mm:ssXXX",
-      ),
+      sunrise: formatInTimeZone(sunriseTz, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
       sunset: formatInTimeZone(sunsetTz, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
-      day_length_hours: Math.round(
-        (differenceInSeconds(sunset, sunrise) / 3600) * 10,
-      ) / 10,
+      day_length_hours: Math.round((differenceInSeconds(sunset, sunrise) / 3600) * 10) / 10,
       golden_hour: {
-        start: formatInTimeZone(
-          goldenHourStart,
-          timezone,
-          "yyyy-MM-dd'T'HH:mm:ssXXX",
-        ),
-        end: formatInTimeZone(
-          goldenHourEnd,
-          timezone,
-          "yyyy-MM-dd'T'HH:mm:ssXXX",
-        ),
+        start: formatInTimeZone(goldenHourStart, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+        end: formatInTimeZone(goldenHourEnd, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
         duration_minutes: 30,
       },
       blue_hour: {
-        start: formatInTimeZone(
-          blueHourStart,
-          timezone,
-          "yyyy-MM-dd'T'HH:mm:ssXXX",
-        ),
-        end: formatInTimeZone(
-          blueHourEnd,
-          timezone,
-          "yyyy-MM-dd'T'HH:mm:ssXXX",
-        ),
+        start: formatInTimeZone(blueHourStart, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+        end: formatInTimeZone(blueHourEnd, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
         duration_minutes: 40,
       },
       moon_phase: "waxing gibbous",
       best_photography_windows: [
         {
           type: "golden_hour",
-          start: formatInTimeZone(
-            goldenHourStart,
-            timezone,
-            "yyyy-MM-dd'T'HH:mm:ssXXX",
-          ),
-          end: formatInTimeZone(
-            goldenHourEnd,
-            timezone,
-            "yyyy-MM-dd'T'HH:mm:ssXXX",
-          ),
+          start: formatInTimeZone(goldenHourStart, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+          end: formatInTimeZone(goldenHourEnd, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
         },
         {
           type: "blue_hour",
-          start: formatInTimeZone(
-            blueHourStart,
-            timezone,
-            "yyyy-MM-dd'T'HH:mm:ssXXX",
-          ),
-          end: formatInTimeZone(
-            blueHourEnd,
-            timezone,
-            "yyyy-MM-dd'T'HH:mm:ssXXX",
-          ),
+          start: formatInTimeZone(blueHourStart, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
+          end: formatInTimeZone(blueHourEnd, timezone, "yyyy-MM-dd'T'HH:mm:ssXXX"),
         },
       ],
     };
@@ -665,7 +592,7 @@ export function calculateAstronomyData(
  */
 export function calculateComfortIndex(
   weather: Record<string, unknown>,
-  airQuality?: Record<string, unknown> | null,
+  airQuality?: Record<string, unknown> | null
 ): ComfortIndex {
   try {
     // Extract weather metrics
@@ -688,7 +615,7 @@ export function calculateComfortIndex(
     }
 
     // Air quality factor
-    const aqi = airQuality ? ((airQuality.european_aqi as number) || 50) : 50;
+    const aqi = airQuality ? (airQuality.european_aqi as number) || 50 : 50;
     const airQualityFactor = Math.max(0, 100 - aqi);
 
     // Precipitation risk
@@ -709,7 +636,8 @@ export function calculateComfortIndex(
     const weatherFactor = severityMap[codeSeverity] || 50;
 
     // Calculate weighted overall comfort
-    const overall = thermal * 0.25 +
+    const overall =
+      thermal * 0.25 +
       airQualityFactor * 0.15 +
       precipFactor * 0.2 +
       uvFactor * 0.15 +

@@ -16,11 +16,7 @@ import type {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import { OpenMeteoClient } from "./client.js";
-import {
-  calculateAstronomyData,
-  calculateComfortIndex,
-  generateWeatherAlerts,
-} from "./helpers.js";
+import { calculateAstronomyData, calculateComfortIndex, generateWeatherAlerts } from "./helpers.js";
 
 // Initialize API client
 const client = new OpenMeteoClient();
@@ -49,8 +45,7 @@ function loadResourceFile(filename: string): string {
 export const TOOLS: Tool[] = [
   {
     name: "meteo__get_weather",
-    description:
-      `Retrieves weather forecast for a location (temperature, rain, sunshine).
+    description: `Retrieves weather forecast for a location (temperature, rain, sunshine).
 
 Get current weather conditions for any location in Switzerland (or worldwide).
 
@@ -147,8 +142,7 @@ Get current weather conditions for any location in Switzerland (or worldwide).
   },
   {
     name: "meteo__get_weather_alerts",
-    description:
-      "Generate weather alerts based on thresholds (heat, cold, storm, UV warnings).",
+    description: "Generate weather alerts based on thresholds (heat, cold, storm, UV warnings).",
     inputSchema: {
       type: "object",
       properties: {
@@ -165,8 +159,7 @@ Get current weather conditions for any location in Switzerland (or worldwide).
   },
   {
     name: "meteo__get_historical_weather",
-    description:
-      "Retrieves historical weather data for trend analysis. Access 80+ years of data.",
+    description: "Retrieves historical weather data for trend analysis. Access 80+ years of data.",
     inputSchema: {
       type: "object",
       properties: {
@@ -241,8 +234,7 @@ Get current weather conditions for any location in Switzerland (or worldwide).
   },
   {
     name: "meteo__compare_locations",
-    description:
-      "Compare weather conditions across multiple locations and rank by criteria.",
+    description: "Compare weather conditions across multiple locations and rank by criteria.",
     inputSchema: {
       type: "object",
       properties: {
@@ -270,7 +262,7 @@ Get current weather conditions for any location in Switzerland (or worldwide).
 // ============================================================================
 
 export async function handleToolCall(
-  request: CallToolRequest,
+  request: CallToolRequest
 ): Promise<{ content: Array<{ type: string; text: string }> }> {
   const { name, arguments: args } = request.params;
 
@@ -286,7 +278,7 @@ export async function handleToolCall(
         args.longitude as number,
         (args.forecast_days as number) || 7,
         (args.include_hourly as boolean) ?? true,
-        (args.timezone as string) || "auto",
+        (args.timezone as string) || "auto"
       );
       return {
         content: [{ type: "text", text: JSON.stringify(forecast, null, 2) }],
@@ -299,7 +291,7 @@ export async function handleToolCall(
         args.longitude as number,
         (args.forecast_days as number) || 7,
         (args.include_hourly as boolean) ?? true,
-        (args.timezone as string) || "Europe/Zurich",
+        (args.timezone as string) || "Europe/Zurich"
       );
       return {
         content: [{ type: "text", text: JSON.stringify(conditions, null, 2) }],
@@ -311,7 +303,7 @@ export async function handleToolCall(
         args.name as string,
         (args.count as number) || 10,
         (args.language as string) || "en",
-        (args.country as string) || undefined,
+        (args.country as string) || undefined
       );
       return {
         content: [{ type: "text", text: JSON.stringify(response, null, 2) }],
@@ -324,7 +316,7 @@ export async function handleToolCall(
         args.longitude as number,
         (args.forecast_days as number) || 5,
         (args.include_pollen as boolean) ?? true,
-        (args.timezone as string) || "auto",
+        (args.timezone as string) || "auto"
       );
       return {
         content: [{ type: "text", text: JSON.stringify(forecast, null, 2) }],
@@ -340,19 +332,14 @@ export async function handleToolCall(
         args.longitude as number,
         Math.min(Math.max(Math.floor(forecastHours / 24) + 1, 1), 16),
         true,
-        timezone,
+        timezone
       );
 
       const current = forecast.current_weather || {};
       const hourly = forecast.hourly || {};
       const daily = forecast.daily || {};
 
-      const alerts = generateWeatherAlerts(
-        current,
-        hourly,
-        daily,
-        forecast.timezone,
-      );
+      const alerts = generateWeatherAlerts(current, hourly, daily, forecast.timezone);
 
       return {
         content: [
@@ -366,7 +353,7 @@ export async function handleToolCall(
                 alerts,
               },
               null,
-              2,
+              2
             ),
           },
         ],
@@ -380,7 +367,7 @@ export async function handleToolCall(
         args.start_date as string,
         args.end_date as string,
         (args.include_hourly as boolean) ?? false,
-        (args.timezone as string) || "auto",
+        (args.timezone as string) || "auto"
       );
       return {
         content: [{ type: "text", text: JSON.stringify(historical, null, 2) }],
@@ -393,7 +380,7 @@ export async function handleToolCall(
         args.longitude as number,
         (args.forecast_days as number) || 7,
         (args.include_hourly as boolean) ?? true,
-        (args.timezone as string) || "auto",
+        (args.timezone as string) || "auto"
       );
       return {
         content: [{ type: "text", text: JSON.stringify(conditions, null, 2) }],
@@ -408,7 +395,7 @@ export async function handleToolCall(
         args.longitude as number,
         1,
         false,
-        timezone,
+        timezone
       );
 
       const airQualityForecast = await client.getAirQuality(
@@ -416,7 +403,7 @@ export async function handleToolCall(
         args.longitude as number,
         1,
         false,
-        timezone,
+        timezone
       );
 
       const weather = weatherForecast.current_weather || {};
@@ -436,7 +423,7 @@ export async function handleToolCall(
                 comfort_index: comfort,
               },
               null,
-              2,
+              2
             ),
           },
         ],
@@ -452,7 +439,7 @@ export async function handleToolCall(
           args.longitude as number,
           1,
           false,
-          "auto",
+          "auto"
         );
         timezone = weather.timezone;
       }
@@ -460,7 +447,7 @@ export async function handleToolCall(
       const astronomy = calculateAstronomyData(
         args.latitude as number,
         args.longitude as number,
-        timezone,
+        timezone
       );
 
       return {
@@ -475,7 +462,7 @@ export async function handleToolCall(
                 astronomy,
               },
               null,
-              2,
+              2
             ),
           },
         ],
@@ -487,19 +474,12 @@ export async function handleToolCall(
       const language = (args.language as string) || "en";
       const includeFeatures = (args.include_features as boolean) ?? false;
 
-      const response = await client.searchLocation(
-        args.name as string,
-        count * 2,
-        language,
-        "CH",
-      );
+      const response = await client.searchLocation(args.name as string, count * 2, language, "CH");
 
       let results = response.results || [];
 
       if (!includeFeatures) {
-        results = results.filter(
-          (r) => !r.feature_code || r.feature_code.startsWith("PPL"),
-        );
+        results = results.filter((r) => !r.feature_code || r.feature_code.startsWith("PPL"));
       }
 
       results.sort((a, b) => (b.population || 0) - (a.population || 0));
@@ -519,7 +499,7 @@ export async function handleToolCall(
                 language,
               },
               null,
-              2,
+              2
             ),
           },
         ],
@@ -544,7 +524,7 @@ export async function handleToolCall(
             loc.longitude,
             forecastDays,
             false,
-            "auto",
+            "auto"
           );
 
           const airQuality = await client.getAirQuality(
@@ -552,7 +532,7 @@ export async function handleToolCall(
             loc.longitude,
             1,
             false,
-            "auto",
+            "auto"
           );
 
           const currentWeather = weather.current_weather || {};
@@ -564,13 +544,9 @@ export async function handleToolCall(
             name: loc.name,
             latitude: loc.latitude,
             longitude: loc.longitude,
-            temperature:
-              (currentWeather as Record<string, unknown>).temperature || 0,
-            wind_speed: (currentWeather as Record<string, unknown>).windspeed ||
-              0,
-            weather_code:
-              (currentWeather as Record<string, unknown>).weathercode ||
-              0,
+            temperature: (currentWeather as Record<string, unknown>).temperature || 0,
+            wind_speed: (currentWeather as Record<string, unknown>).windspeed || 0,
+            weather_code: (currentWeather as Record<string, unknown>).weathercode || 0,
             comfort_index: comfort.overall,
             aqi: (currentAqi as Record<string, unknown>).european_aqi || 0,
             recommendation: comfort.recommendation,
@@ -585,27 +561,31 @@ export async function handleToolCall(
 
       switch (criteria) {
         case "warmest":
-          results.sort((a, b) =>
-            ((b as Record<string, unknown>).temperature as number || 0) -
-            ((a as Record<string, unknown>).temperature as number || 0)
+          results.sort(
+            (a, b) =>
+              (((b as Record<string, unknown>).temperature as number) || 0) -
+              (((a as Record<string, unknown>).temperature as number) || 0)
           );
           break;
         case "best_air_quality":
-          results.sort((a, b) =>
-            ((a as Record<string, unknown>).aqi as number || 999) -
-            ((b as Record<string, unknown>).aqi as number || 999)
+          results.sort(
+            (a, b) =>
+              (((a as Record<string, unknown>).aqi as number) || 999) -
+              (((b as Record<string, unknown>).aqi as number) || 999)
           );
           break;
         case "calmest":
-          results.sort((a, b) =>
-            ((a as Record<string, unknown>).wind_speed as number || 999) -
-            ((b as Record<string, unknown>).wind_speed as number || 999)
+          results.sort(
+            (a, b) =>
+              (((a as Record<string, unknown>).wind_speed as number) || 999) -
+              (((b as Record<string, unknown>).wind_speed as number) || 999)
           );
           break;
         default:
-          results.sort((a, b) =>
-            ((b as Record<string, unknown>).comfort_index as number || 0) -
-            ((a as Record<string, unknown>).comfort_index as number || 0)
+          results.sort(
+            (a, b) =>
+              (((b as Record<string, unknown>).comfort_index as number) || 0) -
+              (((a as Record<string, unknown>).comfort_index as number) || 0)
           );
       }
 
@@ -621,7 +601,7 @@ export async function handleToolCall(
                 comparison_timestamp: new Date().toISOString(),
               },
               null,
-              2,
+              2
             ),
           },
         ],
@@ -643,15 +623,13 @@ export function listResources(): ListResourcesResult {
       {
         uri: "weather://codes",
         name: "WMO Weather Codes Reference",
-        description:
-          "WMO weather code reference with descriptions, categories, and travel impact",
+        description: "WMO weather code reference with descriptions, categories, and travel impact",
         mimeType: "application/json",
       },
       {
         uri: "weather://parameters",
         name: "Weather Parameters Reference",
-        description:
-          "Available weather and snow parameters from Open-Meteo API",
+        description: "Available weather and snow parameters from Open-Meteo API",
         mimeType: "application/json",
       },
       {
@@ -707,8 +685,7 @@ export function listPrompts(): ListPromptsResult {
     prompts: [
       {
         name: "meteo__ski-trip-weather",
-        description:
-          "Generates a guide for checking snow conditions and weather for ski trips",
+        description: "Generates a guide for checking snow conditions and weather for ski trips",
         arguments: [
           {
             name: "resort",
@@ -724,8 +701,7 @@ export function listPrompts(): ListPromptsResult {
       },
       {
         name: "meteo__plan-outdoor-activity",
-        description:
-          "Generates a weather-aware outdoor activity planning workflow",
+        description: "Generates a weather-aware outdoor activity planning workflow",
         arguments: [
           {
             name: "activity",
@@ -746,8 +722,7 @@ export function listPrompts(): ListPromptsResult {
       },
       {
         name: "meteo__weather-aware-travel",
-        description:
-          "Generates an integration pattern for combining weather forecasts with travel",
+        description: "Generates an integration pattern for combining weather forecasts with travel",
         arguments: [
           {
             name: "destination",
@@ -776,21 +751,14 @@ export function getPrompt(request: GetPromptRequest) {
   // args is optional for prompts, so we provide empty object as default
   const promptArgs = args || {};
 
-  const templates: Record<
-    string,
-    (args?: Record<string, string>) => string
-  > = {
+  const templates: Record<string, (args?: Record<string, string>) => string> = {
     "meteo__ski-trip-weather": (args) => {
       const resort = args?.resort || "";
       const dates = args?.dates || "";
       return `You are helping plan a ski trip to Swiss Alps resorts. Follow this workflow:
 
 **Step 1: Identify the Resort**
-${
-        resort
-          ? `Resort mentioned: ${resort}`
-          : "Determine the resort from the user's query"
-      }
+${resort ? `Resort mentioned: ${resort}` : "Determine the resort from the user's query"}
 
 **Step 2: Check Snow Conditions**
 Use \`meteo__get_snow_conditions\` tool with resort coordinates

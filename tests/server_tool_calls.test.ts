@@ -18,7 +18,7 @@ function mockFetch(mockData: unknown) {
       new Response(JSON.stringify(mockData), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }),
+      })
     );
   };
 }
@@ -372,7 +372,7 @@ test("handleToolCall: meteo__get_comfort_index", async () => {
       new Response(JSON.stringify(data), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }),
+      })
     );
   };
 
@@ -528,7 +528,7 @@ test("handleToolCall: meteo__compare_locations", async () => {
       new Response(JSON.stringify(data), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }),
+      })
     );
   };
 
@@ -568,7 +568,7 @@ test("handleToolCall: meteo__compare_locations with warmest criteria", async () 
       new Response(JSON.stringify(data), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }),
+      })
     );
   };
 
@@ -577,9 +577,7 @@ test("handleToolCall: meteo__compare_locations with warmest criteria", async () 
     params: {
       name: "meteo__compare_locations",
       arguments: {
-        locations: [
-          { name: "Zürich", latitude: 47.3769, longitude: 8.5417 },
-        ],
+        locations: [{ name: "Zürich", latitude: 47.3769, longitude: 8.5417 }],
         criteria: "warmest",
       },
     },
@@ -603,7 +601,7 @@ test("handleToolCall: meteo__compare_locations with best_air_quality criteria", 
       new Response(JSON.stringify(data), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }),
+      })
     );
   };
 
@@ -612,9 +610,7 @@ test("handleToolCall: meteo__compare_locations with best_air_quality criteria", 
     params: {
       name: "meteo__compare_locations",
       arguments: {
-        locations: [
-          { name: "Zürich", latitude: 47.3769, longitude: 8.5417 },
-        ],
+        locations: [{ name: "Zürich", latitude: 47.3769, longitude: 8.5417 }],
         criteria: "best_air_quality",
       },
     },
@@ -638,7 +634,7 @@ test("handleToolCall: meteo__compare_locations with calmest criteria", async () 
       new Response(JSON.stringify(data), {
         status: 200,
         headers: { "Content-Type": "application/json" },
-      }),
+      })
     );
   };
 
@@ -647,9 +643,7 @@ test("handleToolCall: meteo__compare_locations with calmest criteria", async () 
     params: {
       name: "meteo__compare_locations",
       arguments: {
-        locations: [
-          { name: "Zürich", latitude: 47.3769, longitude: 8.5417 },
-        ],
+        locations: [{ name: "Zürich", latitude: 47.3769, longitude: 8.5417 }],
         criteria: "calmest",
       },
     },
@@ -670,7 +664,7 @@ test("handleToolCall: meteo__compare_locations handles API error gracefully", as
       new Response(null, {
         status: 500,
         statusText: "Internal Server Error",
-      }),
+      })
     );
   };
 
@@ -679,9 +673,7 @@ test("handleToolCall: meteo__compare_locations handles API error gracefully", as
     params: {
       name: "meteo__compare_locations",
       arguments: {
-        locations: [
-          { name: "Zürich", latitude: 47.3769, longitude: 8.5417 },
-        ],
+        locations: [{ name: "Zürich", latitude: 47.3769, longitude: 8.5417 }],
       },
     },
   };
@@ -709,11 +701,7 @@ test("handleToolCall: throws error for unknown tool", async () => {
     },
   };
 
-  await assert.rejects(
-    async () => await handleToolCall(request),
-    Error,
-    "Unknown tool",
-  );
+  await assert.rejects(async () => await handleToolCall(request), Error, "Unknown tool");
 });
 
 test("handleToolCall: throws error when arguments are missing", async () => {
@@ -724,11 +712,7 @@ test("handleToolCall: throws error when arguments are missing", async () => {
     },
   } as CallToolRequest;
 
-  await assert.rejects(
-    async () => await handleToolCall(request),
-    Error,
-    "No arguments provided",
-  );
+  await assert.rejects(async () => await handleToolCall(request), Error, "No arguments provided");
 });
 
 test("handleToolCall: meteo__get_weather_alerts with default forecast_hours", async () => {

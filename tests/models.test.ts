@@ -62,7 +62,7 @@ test("WeatherInput: invalid latitude too high", () => {
       });
     },
     ZodError,
-    "latitude",
+    "latitude"
   );
 });
 
@@ -75,7 +75,7 @@ test("WeatherInput: invalid latitude too low", () => {
       });
     },
     ZodError,
-    "latitude",
+    "latitude"
   );
 });
 
@@ -88,7 +88,7 @@ test("WeatherInput: invalid longitude too high", () => {
       });
     },
     ZodError,
-    "longitude",
+    "longitude"
   );
 });
 
@@ -101,7 +101,7 @@ test("WeatherInput: invalid longitude too low", () => {
       });
     },
     ZodError,
-    "longitude",
+    "longitude"
   );
 });
 
@@ -115,7 +115,7 @@ test("WeatherInput: invalid forecast_days too low", () => {
       });
     },
     ZodError,
-    "forecast_days",
+    "forecast_days"
   );
 });
 
@@ -129,7 +129,7 @@ test("WeatherInput: invalid forecast_days too high", () => {
       });
     },
     ZodError,
-    "forecast_days",
+    "forecast_days"
   );
 });
 
@@ -143,7 +143,7 @@ test("WeatherInput: empty timezone", () => {
       });
     },
     ZodError,
-    "timezone",
+    "timezone"
   );
 });
 

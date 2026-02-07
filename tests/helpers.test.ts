@@ -199,10 +199,7 @@ test("calculateWindChill: positive temp wind chill", () => {
 test("getSeasonalAdvice: winter advice", () => {
   const advice = getSeasonalAdvice(12);
   assert(advice.includes("Winter"));
-  assert(
-    advice.toLowerCase().includes("skiing") ||
-      advice.toLowerCase().includes("snow"),
-  );
+  assert(advice.toLowerCase().includes("skiing") || advice.toLowerCase().includes("snow"));
 });
 
 test("getSeasonalAdvice: spring advice", () => {
@@ -213,10 +210,7 @@ test("getSeasonalAdvice: spring advice", () => {
 test("getSeasonalAdvice: summer advice", () => {
   const advice = getSeasonalAdvice(7);
   assert(advice.includes("Summer"));
-  assert(
-    advice.toLowerCase().includes("hiking") ||
-      advice.toLowerCase().includes("outdoor"),
-  );
+  assert(advice.toLowerCase().includes("hiking") || advice.toLowerCase().includes("outdoor"));
 });
 
 test("getSeasonalAdvice: autumn advice", () => {
@@ -266,10 +260,7 @@ test("generateWeatherAlerts: heat alert generation", () => {
     temperature_2m: [32, 33, 34, 35, 35, 34, 33, 32, ...Array(16).fill(20)],
     wind_gusts_10m: Array(24).fill(10),
     uv_index: Array(24).fill(3),
-    time: Array.from(
-      { length: 24 },
-      (_, h) => `2024-01-18T${h.toString().padStart(2, "0")}:00`,
-    ),
+    time: Array.from({ length: 24 }, (_, h) => `2024-01-18T${h.toString().padStart(2, "0")}:00`),
   };
   const daily = {
     temperature_2m_max: [35],
@@ -290,10 +281,7 @@ test("generateWeatherAlerts: cold alert generation", () => {
     temperature_2m: [-15, -16, -17, ...Array(21).fill(10)],
     wind_gusts_10m: Array(24).fill(10),
     uv_index: Array(24).fill(1),
-    time: Array.from(
-      { length: 24 },
-      (_, h) => `2024-01-18T${h.toString().padStart(2, "0")}:00`,
-    ),
+    time: Array.from({ length: 24 }, (_, h) => `2024-01-18T${h.toString().padStart(2, "0")}:00`),
   };
   const daily = {
     temperature_2m_max: [-10],
@@ -313,10 +301,7 @@ test("generateWeatherAlerts: no alerts for normal conditions", () => {
     temperature_2m: Array(24).fill(15),
     wind_gusts_10m: Array(24).fill(15),
     uv_index: Array(24).fill(3),
-    time: Array.from(
-      { length: 24 },
-      (_, h) => `2024-01-18T${h.toString().padStart(2, "0")}:00`,
-    ),
+    time: Array.from({ length: 24 }, (_, h) => `2024-01-18T${h.toString().padStart(2, "0")}:00`),
   };
   const daily = {
     temperature_2m_max: [18],
@@ -361,10 +346,7 @@ test("calculateComfortIndex: poor comfort", () => {
   const airQuality = { european_aqi: 150 };
   const result = calculateComfortIndex(weather, airQuality);
   assert(result.overall < 40);
-  assert(
-    result.recommendation.includes("Poor") ||
-      result.recommendation.includes("Very poor"),
-  );
+  assert(result.recommendation.includes("Poor") || result.recommendation.includes("Very poor"));
 });
 
 test("calculateComfortIndex: all factors present", () => {

@@ -11,10 +11,7 @@ import { OpenMeteoClient } from "../src/client.js";
 // Helper function to create mock fetch responses
 // ============================================================================
 
-function createMockFetch(
-  responseData: unknown,
-  status = 200,
-): typeof fetch {
+function createMockFetch(responseData: unknown, status = 200): typeof fetch {
   return () => {
     return Promise.resolve({
       ok: status >= 200 && status < 300,
@@ -30,9 +27,7 @@ function createMockFetchError(status: number): typeof fetch {
     return Promise.resolve({
       ok: false,
       status,
-      statusText: status === 500
-        ? "Internal Server Error"
-        : "Service Unavailable",
+      statusText: status === 500 ? "Internal Server Error" : "Service Unavailable",
       json: () => Promise.resolve({}),
     }) as Promise<Response>;
   };
@@ -80,13 +75,7 @@ test("OpenMeteoClient: getWeather success", async () => {
   globalThis.fetch = createMockFetch(mockData);
 
   const client = new OpenMeteoClient();
-  const result = await client.getWeather(
-    46.9479,
-    7.4474,
-    7,
-    true,
-    "auto",
-  );
+  const result = await client.getWeather(46.9479, 7.4474, 7, true, "auto");
 
   assert.equal(result.latitude, 46.9479);
   assert.equal(result.longitude, 7.4474);
@@ -122,13 +111,7 @@ test("OpenMeteoClient: getWeather without hourly", async () => {
   globalThis.fetch = createMockFetch(mockData);
 
   const client = new OpenMeteoClient();
-  const result = await client.getWeather(
-    46.9479,
-    7.4474,
-    7,
-    false,
-    "auto",
-  );
+  const result = await client.getWeather(46.9479, 7.4474, 7, false, "auto");
 
   assert.ok(result.current_weather);
   assert.ok(result.daily);
@@ -140,11 +123,7 @@ test("OpenMeteoClient: getWeather HTTP error", async () => {
 
   const client = new OpenMeteoClient();
 
-  await assert.rejects(
-    () => client.getWeather(46.9479, 7.4474),
-    Error,
-    "HTTP error",
-  );
+  await assert.rejects(() => client.getWeather(46.9479, 7.4474), Error, "HTTP error");
 });
 
 test("OpenMeteoClient: getWeather invalid response", async () => {
@@ -154,11 +133,7 @@ test("OpenMeteoClient: getWeather invalid response", async () => {
 
   const client = new OpenMeteoClient();
 
-  await assert.rejects(
-    () => client.getWeather(46.9479, 7.4474),
-    Error,
-    "Failed to parse",
-  );
+  await assert.rejects(() => client.getWeather(46.9479, 7.4474), Error, "Failed to parse");
 });
 
 test("OpenMeteoClient: forecast_days clamping", async () => {
@@ -220,13 +195,7 @@ test("OpenMeteoClient: getSnowConditions success", async () => {
   globalThis.fetch = createMockFetch(mockData);
 
   const client = new OpenMeteoClient();
-  const result = await client.getSnowConditions(
-    45.9763,
-    7.6586,
-    7,
-    true,
-    "Europe/Zurich",
-  );
+  const result = await client.getSnowConditions(45.9763, 7.6586, 7, true, "Europe/Zurich");
 
   assert.equal(result.latitude, 45.9763);
   assert.equal(result.longitude, 7.6586);
@@ -242,11 +211,7 @@ test("OpenMeteoClient: getSnowConditions HTTP error", async () => {
 
   const client = new OpenMeteoClient();
 
-  await assert.rejects(
-    () => client.getSnowConditions(45.9763, 7.6586),
-    Error,
-    "HTTP error",
-  );
+  await assert.rejects(() => client.getSnowConditions(45.9763, 7.6586), Error, "HTTP error");
 });
 
 test("OpenMeteoClient: getSnowConditions invalid response", async () => {
@@ -256,11 +221,7 @@ test("OpenMeteoClient: getSnowConditions invalid response", async () => {
 
   const client = new OpenMeteoClient();
 
-  await assert.rejects(
-    () => client.getSnowConditions(45.9763, 7.6586),
-    Error,
-    "Failed to parse",
-  );
+  await assert.rejects(() => client.getSnowConditions(45.9763, 7.6586), Error, "Failed to parse");
 });
 
 // ============================================================================
@@ -411,9 +372,7 @@ test("OpenMeteoClient: searchLocation with country filter", async () => {
 
 test("OpenMeteoClient: searchLocation count clamping", async () => {
   const mockData = {
-    results: [
-      { id: 1, name: "Test", latitude: 47.0, longitude: 8.0 },
-    ],
+    results: [{ id: 1, name: "Test", latitude: 47.0, longitude: 8.0 }],
   };
 
   globalThis.fetch = createMockFetch(mockData);
@@ -450,12 +409,7 @@ test("OpenMeteoClient: getHistoricalWeather success", async () => {
   globalThis.fetch = createMockFetch(mockData);
 
   const client = new OpenMeteoClient();
-  const result = await client.getHistoricalWeather(
-    47.3769,
-    8.5417,
-    "2023-01-01",
-    "2023-01-02",
-  );
+  const result = await client.getHistoricalWeather(47.3769, 8.5417, "2023-01-01", "2023-01-02");
 
   assert.equal(result.latitude, 47.3769);
   assert.ok(result.daily);
@@ -493,7 +447,7 @@ test("OpenMeteoClient: getHistoricalWeather with hourly", async () => {
     8.5417,
     "2023-01-01",
     "2023-01-01",
-    true,
+    true
   );
 
   assert.ok(result.hourly);
