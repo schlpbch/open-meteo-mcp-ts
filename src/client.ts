@@ -9,14 +9,14 @@ import type {
   MarineConditions,
   SnowConditions,
   WeatherForecast,
-} from "./models.ts";
+} from "./models.js";
 import {
   AirQualityForecastSchema,
   GeocodingResponseSchema,
   MarineConditionsSchema,
   SnowConditionsSchema,
   WeatherForecastSchema,
-} from "./models.ts";
+} from "./models.js";
 
 /**
  * Client for the Open-Meteo Weather API.
