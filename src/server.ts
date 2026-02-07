@@ -670,7 +670,7 @@ export function listResources(): ListResourcesResult {
   };
 }
 
-export async function readResource(request: ReadResourceRequest) {
+export function readResource(request: ReadResourceRequest) {
   const { uri } = request.params;
 
   const fileMap: Record<string, string> = {
